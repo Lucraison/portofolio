@@ -39,7 +39,7 @@ export default function Hero() {
         </div>
 
         <p style={{ color: 'var(--muted)', fontSize: '16px', lineHeight: 2, maxWidth: '560px', marginBottom: '40px' }}>
-          "Self-taught developer based in Antwerp. Building things until the work speaks for itself."
+          "Developer based in Antwerp. Building things as I go."
         </p>
 
         <div style={{ display: 'flex', gap: '16px' }}>
