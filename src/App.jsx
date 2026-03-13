@@ -1,0 +1,63 @@
+import { useState, useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Lenis from 'lenis'
+import './App.css'
+import Nav from './components/Nav'
+import Hero from './components/Hero'
+import Projects from './components/Projects'
+import Skills from './components/Skills'
+import Contact from './components/Contact'
+import ProjectDetail from './components/ProjectDetail'
+import useReveal from './hooks/useReveal'
+import GuideVPS from './components/guides/GuideVPS'
+
+const NAV_LINKS = ['about', 'projects', 'skills', 'contact']
+
+function Home() {
+  const [active, setActive] = useState('about')
+
+  useReveal()
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id) }),
+      { rootMargin: '-40% 0px -55% 0px' }
+    )
+    NAV_LINKS.forEach(id => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--sans)' }}>
+      <Nav active={active} />
+      <Hero />
+      <Projects />
+      <Skills />
+      <Contact />
+    </div>
+  )
+}
+
+export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 0.8,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    })
+    const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf) }
+    const id = requestAnimationFrame(raf)
+    return () => { cancelAnimationFrame(id); lenis.destroy() }
+  }, [])
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/guides/vps" element={<GuideVPS />} />
+      <Route path="/projects/:id" element={<ProjectDetail />} />
+    </Routes>
+  )
+}

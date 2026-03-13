@@ -1,0 +1,40 @@
+:root {
+  /* =====================
+     BACKGROUNDS
+     ===================== */
+  --bg: #080808;        /* main page background */
+  --bg1: #0f0f0f;       /* card / section background */
+  --bg2: #161616;       /* card hover background */
+
+  /* =====================
+     BORDERS
+     ===================== */
+  --border: rgba(255,255,255,0.06);        /* default subtle border */
+  --border-hi: rgba(220, 20, 60, 0.4);     /* hover / highlight border */
+  --accent-border: rgba(220, 20, 60, 0.2);
+  --accent2-border: rgba(255, 77, 109, 0.2);
+
+  /* =====================
+     ACCENT COLORS
+     ===================== */
+  --accent: #DC143C;
+  --accent2: #ff4d6d;
+
+  /* =====================
+     TEXT
+     ===================== */
+  --text: #f0f0f0;
+  --muted: #b8b0c0;
+  --muted2: #333333;
+
+  /* =====================
+     TYPOGRAPHY
+     ===================== */
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+
+  /* =====================
+     NAV
+     ===================== */
+  --nav-bg: rgba(8, 8, 8, 0.92);
+}

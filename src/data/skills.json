@@ -1,0 +1,12 @@
+[
+  { "name": "Python", "level": 2 },
+  { "name": "JavaScript", "level": 2 },
+  { "name": "React", "level": 2 },
+  { "name": "Azure AI", "level": 2 },
+  { "name": "YOLOv8", "level": 1 },
+  { "name": "REST APIs", "level": 2 },
+  { "name": "SQL", "level": 1 },
+  { "name": "Git", "level": 2 },
+  { "name": "Linux", "level": 1 },
+  { "name": "Node.js", "level": 1 }
+]

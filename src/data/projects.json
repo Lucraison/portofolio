@@ -1,0 +1,56 @@
+[
+  {
+    "id": "printnik",
+    "name": "Printnik",
+    "year": "2025",
+    "desc": "A document generation platform built for a real company. Import raw data, design templates visually, send to printer directly.",
+    "longDesc": "School project in collaboration with a real company. The idea: let users import raw data, build templates around it through a visual editor, and send the result straight to a printer.\n\nThe backend ran on Spring Boot Java, which was new territory for us. Most of our experience was in TypeScript, so the first week was mostly spent trying to understand what we were even looking at. Dependency injection, controllers, repositories, a codebase we hadn't built ourselves. It was a lot to take in before we could even think about writing features.\n\nWe started with a company introduction, got access to the codebase, and immediately hit a wall. Our lecturer had given us the wrong password, and on top of that we discovered a missing header in the database that was blocking everything. Before we could write a single line of feature code, we were already debugging infrastructure.\n\nI got to work on every piece of the project but spent most of my time on the templates section. That meant building the overview page where users could see, filter, and manage their templates.\n\nGetting that page to actually work took longer than expected. The API call was broken in a way that was hard to pin down: different behavior on every machine in the team. I went through everything systematically, tested through Swagger, compared environments, and eventually found the issue. Nobody had noticed a missing header.\n\nThe next step was the template creation flow itself. I had the modal built but ran out of time before I could get the POST call working correctly. Feedback from our lecturer was minimal throughout, so a lot of it felt like figuring things out blind. Not the smoothest project, but I learned more from the things that broke than from the things that worked.",
+    "images": [
+      "/images/printnik/login.png",
+      "/images/printnik/templates.png",
+      "/images/printnik/create-template.png"
+    ],
+    "tags": [
+      "REST API",
+      "Multi-tenant",
+      "Full Stack",
+      "Document Gen"
+    ],
+    "status": "unfinished",
+    "url": ""
+  },
+  {
+    "id": "blackjack",
+    "name": "Blackjack Card Detection",
+    "year": "2025",
+    "desc": "Real-time card recognition using YOLOv8 with a custom Napoleon Live dataset built via Roboflow. Detects and classifies playing cards from a live video feed.",
+    "longDesc": "I used to gamble a bit online. Turns out I really hate losing money, so naturally I started looking into what actually gives you an edge. Basic strategy helps, but the real answer was card counting. Statistically it works, but I was too lazy to learn it myself, so I thought: why not train an AI to do it for me?\n\nThe idea was to build something that could watch a live game, recognize the cards on screen, count them in real time, and tell me the statistically best move to make.\n\nI landed on YOLOv8 for the detection model. The problem was there were no premade datasets for the specific card tables I was playing on, which meant I had to build one myself. That meant manually labeling every card, across different tables, different positions, different lighting conditions.\n\nThat's where it stalled. The labeling alone was going to take forever, and I hadn't even started training yet. Shelved for now, but the idea isn't dead.",
+    "images": [],
+    "tags": [
+      "Python",
+      "YOLOv8",
+      "Computer Vision",
+      "Roboflow"
+    ],
+    "status": "on hold",
+    "url": ""
+  },
+  {
+    "id": "vps",
+    "name": "Game Server Setup",
+    "year": "2024",
+    "desc": "Self-managed Linux VPS on Hetzner running a modded Minecraft server 24/7. Configured from scratch: SSH keys, firewall, backup scripts, the works.",
+    "longDesc": "Most Minecraft server hosting services do everything for you and charge you for it. I figured out that a general purpose VPS was half the price, the only catch being I had to set it up myself.\n\nSo I did. Provisioned a Linux VPS on Hetzner, connected via SSH, set up an SSH key so I never have to touch a password again, configured the firewall, wrote backup scripts, and got a modded Minecraft server running 24/7.\n\nIt just runs. I don't need to touch it anymore. That was the goal.",
+    "images": [],
+    "tags": [
+      "Linux",
+      "SSH",
+      "VPS",
+      "Hetzner",
+      "Bash"
+    ],
+    "status": "live",
+    "url": "",
+    "guideUrl": "/guides/vps"
+  }
+]
