@@ -186,20 +186,38 @@ export default function GuideVPS() {
                 <span style={{ fontFamily: 'var(--mono)', fontSize: '14px', color: 'var(--accent)', letterSpacing: '0.05em', marginLeft: 'auto' }}>NH_</span>
             </nav>
 
-            <div style={{ display: 'flex', maxWidth: '1100px', margin: '0 auto', padding: '80px 40px 80px' }}>
+            <div style={{ display: 'flex', maxWidth: '1200px', margin: '0 auto', padding: '80px 60px 80px' }}>
 
                 {/* sidebar */}
-                <div style={{ width: '200px', flexShrink: 0, paddingTop: '40px', paddingRight: '40px', position: 'sticky', top: '80px', alignSelf: 'flex-start' }}>
+                <div style={{ width: '220px', flexShrink: 0, paddingTop: '40px', paddingRight: '60px', position: 'sticky', top: '80px', alignSelf: 'flex-start' }}>
                     <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '16px' }}>// steps</div>
                     {SECTIONS.map((s, i) => (
-                        <a key={s.id} href={`#${s.id}`} onClick={() => setActive(s.id)} style={{ display: 'block', fontFamily: 'var(--mono)', fontSize: '11px', color: active === s.id ? 'var(--accent)' : 'var(--muted)', textDecoration: 'none', padding: '6px 0', letterSpacing: '0.06em', borderLeft: active === s.id ? '2px solid var(--accent)' : '2px solid transparent', paddingLeft: '12px', transition: 'all 0.2s' }}>
+                        <a key={s.id}
+                            href={`#${s.id}`}
+                            onClick={() => setActive(s.id)}
+                            onMouseEnter={e => { if (active !== s.id) e.currentTarget.style.color = 'var(--accent)' }}
+                            onMouseLeave={e => { if (active !== s.id) e.currentTarget.style.color = 'var(--muted)' }}
+                            style={{
+                                display: 'block',
+                                fontFamily: 'var(--mono)',
+                                fontSize: '12px',
+                                color: active === s.id ? 'var(--accent)' : 'var(--muted)',
+                                textDecoration: 'none',
+                                padding: '10px 0',
+                                letterSpacing: '0.06em',
+                                borderLeft: active === s.id ? '2px solid var(--accent)' : '2px solid transparent',
+                                paddingLeft: '12px',
+                                transition: 'all 0.2s',
+                                marginBottom: '4px',
+                            }}
+                        >
                             {i === 0 ? s.label : `${i}. ${s.label}`}
                         </a>
                     ))}
                 </div>
 
                 {/* content */}
-                <div style={{ flex: 1, paddingTop: '40px' }}>
+                <div style={{ flex: 1, paddingTop: '40px', maxWidth: '720px' }}>
                     <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>// guide</div>
                     <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.2, marginBottom: '8px' }}>
                         Hosting a Modded Minecraft Server on a VPS
