@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import vpsContent from '../../content/guides/vps.md?raw'
+import useWindowSize from '../../hooks/useWindowSize'
 
 function extractSections(markdown) {
     const lines = markdown.split('\n')
@@ -24,7 +25,7 @@ function extractSections(markdown) {
     return sections
 }
 
-function CodeBlock({ code, language }) {
+function CodeBlock({ code }) {
     const [copied, setCopied] = useState(false)
     const handleCopy = () => {
         navigator.clipboard.writeText(code)
@@ -56,14 +57,10 @@ const components = {
         </p>
     ),
     ul: ({ children }) => (
-        <ul style={{ paddingLeft: '20px', marginBottom: '16px' }}>
-            {children}
-        </ul>
+        <ul style={{ paddingLeft: '20px', marginBottom: '16px' }}>{children}</ul>
     ),
     li: ({ children }) => (
-        <li style={{ fontSize: '15px', color: 'var(--muted)', lineHeight: 1.9, marginBottom: '6px' }}>
-            {children}
-        </li>
+        <li style={{ fontSize: '15px', color: 'var(--muted)', lineHeight: 1.9, marginBottom: '6px' }}>{children}</li>
     ),
     strong: ({ children }) => (
         <strong style={{ color: 'var(--text)', fontWeight: 500 }}>{children}</strong>
@@ -71,7 +68,7 @@ const components = {
     code: ({ children, className }) => {
         const isBlock = className?.startsWith('language-')
         if (isBlock) {
-            return <CodeBlock code={String(children).trim()} language={className?.replace('language-', '')} />
+            return <CodeBlock code={String(children).trim()} />
         }
         return <code style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--accent2)', background: 'var(--bg1)', padding: '2px 6px', border: '0.5px solid var(--border)' }}>{children}</code>
     },
@@ -82,6 +79,8 @@ export default function GuideVPS() {
     const navigate = useNavigate()
     const [active, setActive] = useState('')
     const sections = extractSections(vpsContent)
+    const width = useWindowSize()
+    const isMobile = width < 768
 
     useEffect(() => {
         if (sections.length > 0) setActive(sections[0].id)
@@ -101,48 +100,50 @@ export default function GuideVPS() {
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--sans)' }}>
-            <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', padding: '0 40px', height: '56px', borderBottom: '0.5px solid var(--border)', background: 'var(--bg)', transform: 'translateZ(0)' }}>
+            <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', padding: '0 24px', height: '56px', borderBottom: '0.5px solid var(--border)', background: 'var(--bg)', transform: 'translateZ(0)' }}>
                 <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.08em' }}>
                     ← back
                 </button>
                 <span style={{ fontFamily: 'var(--mono)', fontSize: '14px', color: 'var(--accent)', letterSpacing: '0.05em', marginLeft: 'auto' }}>NH_</span>
             </nav>
 
-            <div style={{ display: 'flex', maxWidth: '1200px', margin: '0 auto', padding: '80px 60px 80px' }}>
+            <div style={{ display: 'flex', maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '80px 24px 80px' : '80px 60px 80px' }}>
 
-                {/* sidebar */}
-                <div style={{ width: '220px', flexShrink: 0, paddingTop: '40px', paddingRight: '60px', position: 'sticky', top: '80px', alignSelf: 'flex-start' }}>
-                    <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '16px' }}>// steps</div>
-                    {sections.map((s, i) => (
-                        <a
-                            key={s.id}
-                            href={`#${s.id}`}
-                            onClick={() => setActive(s.id)}
-                            onMouseEnter={e => e.currentTarget.style.borderLeftColor = 'var(--accent)'}
-                            onMouseLeave={e => e.currentTarget.style.borderLeftColor = active === s.id ? 'var(--accent)' : 'transparent'}
-                            style={{
-                                display: 'block',
-                                fontFamily: 'var(--mono)',
-                                fontSize: '12px',
-                                color: active === s.id ? 'var(--accent)' : 'var(--muted)',
-                                textDecoration: 'none',
-                                padding: '10px 0',
-                                paddingLeft: '12px',
-                                letterSpacing: '0.06em',
-                                borderLeft: active === s.id ? '2px solid var(--accent)' : '2px solid transparent',
-                                transition: 'all 0.2s',
-                                marginBottom: '4px',
-                            }}
-                        >
-                            {i === 0 ? s.title : s.title}
-                        </a>
-                    ))}
-                </div>
+                {/* sidebar — hidden on mobile */}
+                {!isMobile && (
+                    <div style={{ width: '220px', flexShrink: 0, paddingTop: '40px', paddingRight: '60px', position: 'sticky', top: '80px', alignSelf: 'flex-start' }}>
+                        <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '16px' }}>// steps</div>
+                        {sections.map((s) => (
+                            <a
+                                key={s.id}
+                                href={`#${s.id}`}
+                                onClick={() => setActive(s.id)}
+                                onMouseEnter={e => e.currentTarget.style.borderLeftColor = 'var(--accent)'}
+                                onMouseLeave={e => e.currentTarget.style.borderLeftColor = active === s.id ? 'var(--accent)' : 'transparent'}
+                                style={{
+                                    display: 'block',
+                                    fontFamily: 'var(--mono)',
+                                    fontSize: '12px',
+                                    color: active === s.id ? 'var(--accent)' : 'var(--muted)',
+                                    textDecoration: 'none',
+                                    padding: '10px 0',
+                                    paddingLeft: '12px',
+                                    letterSpacing: '0.06em',
+                                    borderLeft: active === s.id ? '2px solid var(--accent)' : '2px solid transparent',
+                                    transition: 'all 0.2s',
+                                    marginBottom: '4px',
+                                }}
+                            >
+                                {s.title}
+                            </a>
+                        ))}
+                    </div>
+                )}
 
                 {/* content */}
-                <div style={{ flex: 1, paddingTop: '40px', maxWidth: '720px' }}>
+                <div style={{ flex: 1, paddingTop: '40px', maxWidth: isMobile ? '100%' : '720px' }}>
                     <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>// guide</div>
-                    <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.2, marginBottom: '8px' }}>
+                    <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.2, marginBottom: '8px' }}>
                         Hosting a Modded Minecraft Server on a VPS
                     </h1>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted2)', marginBottom: '64px', letterSpacing: '0.06em' }}>
