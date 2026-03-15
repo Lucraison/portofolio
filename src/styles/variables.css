@@ -3,19 +3,14 @@
      BACKGROUNDS
      ===================== */
    --bg: #080808;
-   /* main page background */
    --bg1: #0f0f0f;
-   /* card / section background */
    --bg2: #161616;
-   /* card hover background */
 
    /* =====================
      BORDERS
      ===================== */
    --border: rgba(255, 255, 255, 0.06);
-   /* default subtle border */
    --border-hi: rgba(220, 20, 60, 0.4);
-   /* hover / highlight border */
    --accent-border: rgba(220, 20, 60, 0.2);
    --accent2-border: rgba(255, 77, 109, 0.2);
 
@@ -44,8 +39,22 @@
    --nav-bg: rgba(8, 8, 8, 0.92);
 }
 
+[data-theme="light"] {
+   --bg: #f5f5f5;
+   --bg1: #ebebeb;
+   --bg2: #e0e0e0;
+   --border: rgba(0, 0, 0, 0.08);
+   --border-hi: rgba(220, 20, 60, 0.4);
+   --accent-border: rgba(220, 20, 60, 0.3);
+   --accent2-border: rgba(255, 77, 109, 0.3);
+   --text: #111111;
+   --muted: #555555;
+   --muted2: #999999;
+   --nav-bg: rgba(245, 245, 245, 0.92);
+}
+
 @media (prefers-color-scheme: light) {
-   :root {
+   :root:not([data-theme="dark"]) {
       --bg: #f5f5f5;
       --bg1: #ebebeb;
       --bg2: #e0e0e0;

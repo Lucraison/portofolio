@@ -62,6 +62,7 @@ export default function Contact() {
         {[
           { label: 'EMAIL', value: 'nicolas.nataniel79@gmail.com', action: <button onClick={handleCopy} style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: copied ? 'var(--accent2)' : 'var(--muted)', background: 'none', border: '0.5px solid var(--border)', padding: '5px 10px', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? 'copied!' : 'copy'}</button> },
           { label: 'GITHUB', value: 'github.com/Lucraison', action: <a href="https://github.com/Lucraison/" target="_blank" rel="noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '5px 10px', textDecoration: 'none', letterSpacing: '0.1em' }}>visit →</a> },
+          { label: 'LINKEDIN', value: 'linkedin.com/in/nicolas-hs', action: <a href="https://www.linkedin.com/in/nicolas-hs/" target="_blank" rel="noreferrer" style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '5px 10px', textDecoration: 'none', letterSpacing: '0.1em' }}>visit →</a> },
         ].map(row => (
           <div key={row.label} className="reveal" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px', border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '16px 20px', marginBottom: '12px' }}>
             <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)', letterSpacing: '0.1em', width: '60px', flexShrink: 0 }}>{row.label}</span>
