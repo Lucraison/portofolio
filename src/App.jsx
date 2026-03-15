@@ -6,12 +6,13 @@ import Nav from './components/Nav'
 import Hero from './components/Hero'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
+import Education from './components/Education'
 import Contact from './components/Contact'
 import ProjectDetail from './components/ProjectDetail'
 import useReveal from './hooks/useReveal'
 import GuideVPS from './components/guides/GuideVPS'
 
-const NAV_LINKS = ['about', 'projects', 'skills', 'contact']
+const NAV_LINKS = ['about', 'projects', 'skills', 'education', 'contact']
 
 function Home() {
   const [active, setActive] = useState('about')
@@ -36,6 +37,7 @@ function Home() {
       <Hero />
       <Projects />
       <Skills />
+      <Education />
       <Contact />
     </div>
   )

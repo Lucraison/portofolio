@@ -1,6 +1,18 @@
+import { useEffect, useState } from 'react'
 import useTypewriter from '../hooks/useTypewriter'
 
 export default function Hero() {
+  const [views, setViews] = useState(null)
+
+  useEffect(() => {
+    const visited = sessionStorage.getItem('viewed')
+    const method = visited ? 'GET' : 'POST'
+    if (!visited) sessionStorage.setItem('viewed', '1')
+    fetch('/api/views', { method })
+      .then(r => r.json())
+      .then(d => setViews(d.count))
+      .catch(() => {})
+  }, [])
   const typedRef = useTypewriter([
     'developer & ai enthusiast',
     'self-taught, still learning',
@@ -41,6 +53,12 @@ export default function Hero() {
         <p style={{ color: 'var(--muted)', fontSize: '16px', lineHeight: 2, maxWidth: '560px', marginBottom: '40px' }}>
           "Developer based in Antwerp. Building things as I go."
         </p>
+
+        {views !== null && (
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
+            <span style={{ color: 'var(--accent)' }}>●</span> {views} visits
+          </div>
+        )}
 
         <div style={{ display: 'flex', gap: '16px' }}>
           <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
