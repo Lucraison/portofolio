@@ -1,29 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
-import PROJECTS from '../data/projects.json'
-
-const markdownFiles = import.meta.glob('../content/projects/*.md', { query: '?raw', import: 'default' })
 
 export default function ProjectDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const project = PROJECTS.find(p => p.id === id)
+  const [project, setProject] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [lightbox, setLightbox] = useState(null)
-  const [content, setContent] = useState('')
 
   useEffect(() => {
-    const key = `../content/projects/${id}.md`
-    if (markdownFiles[key]) {
-      markdownFiles[key]().then(setContent)
-    }
+    fetch(`/api/projects/${id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { setProject(data); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [id])
-
-  if (!project) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>project not found.</p>
-    </div>
-  )
 
   const components = {
     p: ({ children }) => (
@@ -39,6 +30,18 @@ export default function ProjectDetail() {
       <li style={{ fontSize: '15px', color: 'var(--muted)', lineHeight: 1.9, marginBottom: '6px' }}>{children}</li>
     ),
   }
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>loading...</p>
+    </div>
+  )
+
+  if (!project) return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>project not found.</p>
+    </div>
+  )
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--sans)' }}>
@@ -90,7 +93,7 @@ export default function ProjectDetail() {
         )}
 
         <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: '48px', marginBottom: '64px' }}>
-          <ReactMarkdown components={components}>{content}</ReactMarkdown>
+          <ReactMarkdown components={components}>{project.content}</ReactMarkdown>
         </div>
 
         {project.images && project.images.length > 0 && (

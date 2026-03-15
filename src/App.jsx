@@ -7,13 +7,16 @@ import Hero from './components/Hero'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
 import Education from './components/Education'
+import Notes from './components/Notes'
 import Contact from './components/Contact'
 import ProjectDetail from './components/ProjectDetail'
+import Blog from './components/Blog'
+import BlogPost from './components/BlogPost'
 import Admin from './components/Admin'
 import useReveal from './hooks/useReveal'
 import GuideVPS from './components/guides/GuideVPS'
 
-const NAV_LINKS = ['about', 'projects', 'skills', 'education', 'contact']
+const NAV_LINKS = ['about', 'projects', 'skills', 'education', 'notes', 'contact']
 
 function Home() {
   const [active, setActive] = useState('about')
@@ -39,6 +42,7 @@ function Home() {
       <Projects />
       <Skills />
       <Education />
+      <Notes />
       <Contact />
     </div>
   )
@@ -62,6 +66,8 @@ export default function App() {
       <Route path="/guides/vps" element={<GuideVPS />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/projects/:id" element={<ProjectDetail />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
     </Routes>
   )
 }

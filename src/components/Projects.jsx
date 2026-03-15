@@ -1,7 +1,16 @@
-import PROJECTS from '../data/projects.json'
+import { useState, useEffect } from 'react'
 import ProjectCard from './ProjectCard'
 
 export default function Projects() {
+  const [projects, setProjects] = useState([])
+
+  useEffect(() => {
+    fetch('/api/projects')
+      .then(r => r.json())
+      .then(setProjects)
+      .catch(() => {})
+  }, [])
+
   return (
     <section id="projects" style={{ padding: '100px 40px', borderBottom: '0.5px solid var(--border)' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -12,7 +21,7 @@ export default function Projects() {
           Things I've built
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {PROJECTS.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
+          {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
         </div>
       </div>
     </section>

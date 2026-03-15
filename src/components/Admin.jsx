@@ -1,142 +1,290 @@
 import { useState, useEffect } from 'react'
 
-export default function Admin() {
-  const [password, setPassword] = useState('')
+const TABS = ['messages', 'projects', 'posts']
+
+const S = {
+  page: { minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--mono)', padding: '80px 40px' },
+  label: { fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' },
+  stat: { border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '20px 24px', marginBottom: '12px' },
+  statVal: { fontSize: '28px', fontWeight: 300, color: 'var(--accent)', marginBottom: '4px' },
+  statKey: { fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase' },
+  card: { border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '20px 24px', marginBottom: '12px' },
+  input: { fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--text)', background: 'var(--bg)', border: '0.5px solid var(--border)', padding: '10px 14px', width: '100%', outline: 'none', boxSizing: 'border-box', marginBottom: '8px' },
+  textarea: { fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--text)', background: 'var(--bg)', border: '0.5px solid var(--border)', padding: '10px 14px', width: '100%', outline: 'none', boxSizing: 'border-box', marginBottom: '8px', resize: 'vertical' },
+  btn: { fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'var(--accent)', color: 'var(--bg)', border: 'none', padding: '8px 20px', cursor: 'pointer' },
+  btnGhost: { fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '8px 20px', cursor: 'pointer' },
+  btnDanger: { fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', color: '#e05c5c', border: '0.5px solid #e05c5c44', padding: '8px 20px', cursor: 'pointer' },
+}
+
+function useAuth() {
   const [token, setToken] = useState(() => sessionStorage.getItem('admin_token'))
-  const [data, setData] = useState(null)
+  const headers = token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : {}
+  return { token, setToken, headers }
+}
+
+// ── Login ──────────────────────────────────────────────────────────────
+function Login({ onLogin }) {
+  const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (token) fetchData(token)
-  }, [token])
-
-  const fetchData = async (t) => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/admin/data', {
-        headers: { Authorization: `Bearer ${t}` },
-      })
-      if (res.status === 401) {
-        sessionStorage.removeItem('admin_token')
-        setToken(null)
-        return
-      }
-      const json = await res.json()
-      setData(json)
-    } catch {
-      setError('Failed to load data.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      })
-      if (res.ok) {
-        const { token: t } = await res.json()
-        sessionStorage.setItem('admin_token', t)
-        setToken(t)
-      } else {
-        setError('Invalid password.')
-      }
-    } catch {
-      setError('Something went wrong.')
-    }
+    const res = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
+    if (res.ok) { const { token } = await res.json(); sessionStorage.setItem('admin_token', token); onLogin(token) }
+    else setError('Invalid password.')
   }
-
-  const STYLE = {
-    page: { minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--mono)', padding: '80px 40px' },
-    label: { fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' },
-    h1: { fontSize: '24px', fontWeight: 300, marginBottom: '48px' },
-    stat: { border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '20px 24px', marginBottom: '12px' },
-    statVal: { fontSize: '28px', fontWeight: 300, color: 'var(--accent)', marginBottom: '4px' },
-    statKey: { fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase' },
-    message: { border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '20px 24px', marginBottom: '12px' },
-    input: { fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--text)', background: 'var(--bg1)', border: '0.5px solid var(--border)', padding: '12px 16px', width: '100%', maxWidth: '320px', outline: 'none', boxSizing: 'border-box' },
-    btn: { fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--accent)', color: 'var(--bg)', border: 'none', padding: '10px 24px', cursor: 'pointer', marginTop: '12px' },
-  }
-
-  if (!token) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', padding: '40px' }}>
-        <div style={{ width: '100%', maxWidth: '360px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <span style={{ fontSize: '20px', color: 'var(--accent)', letterSpacing: '0.05em' }}>NH_</span>
-            <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '8px' }}>admin access</div>
-          </div>
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <input
-              type="password"
-              placeholder="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={{ ...STYLE.input, maxWidth: '100%' }}
-              required
-              autoFocus
-            />
-            <button type="submit" style={{ ...STYLE.btn, marginTop: 0, padding: '12px 24px' }}>Enter →</button>
-            {error && <span style={{ fontSize: '11px', color: '#e05c5c', textAlign: 'center' }}>{error}</span>}
-          </form>
-        </div>
-      </div>
-    )
-  }
-
-  if (loading) return (
-    <div style={{ ...STYLE.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ fontSize: '12px', color: 'var(--muted)' }}>loading...</span>
-    </div>
-  )
 
   return (
-    <div style={STYLE.page}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '48px' }}>
-          <div>
-            <div style={STYLE.label}>// admin</div>
-            <h1 style={{ ...STYLE.h1, marginBottom: 0 }}>Dashboard</h1>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', padding: '40px' }}>
+      <div style={{ width: '100%', maxWidth: '360px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <span style={{ fontSize: '20px', color: 'var(--accent)', letterSpacing: '0.05em' }}>NH_</span>
+          <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '8px' }}>admin access</div>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <input type="password" placeholder="password" value={password} onChange={e => setPassword(e.target.value)} style={{ ...S.input, marginBottom: 0 }} required autoFocus />
+          <button type="submit" style={{ ...S.btn, padding: '12px 24px' }}>Enter →</button>
+          {error && <span style={{ fontSize: '11px', color: '#e05c5c', textAlign: 'center' }}>{error}</span>}
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// ── Messages tab ───────────────────────────────────────────────────────
+function MessagesTab({ data }) {
+  return (
+    <>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '48px' }}>
+        {[{ key: 'Total Views', val: data?.views ?? 0 }, { key: 'Messages', val: data?.messages?.length ?? 0 }, { key: 'CV Downloads', val: data?.downloads ?? 0 }].map(s => (
+          <div key={s.key} style={S.stat}><div style={S.statVal}>{s.val}</div><div style={S.statKey}>{s.key}</div></div>
+        ))}
+      </div>
+      <div style={S.label}>// messages</div>
+      <div style={{ marginTop: '16px' }}>
+        {!data?.messages?.length && <p style={{ fontSize: '13px', color: 'var(--muted)' }}>No messages yet.</p>}
+        {data?.messages?.map((msg, i) => (
+          <div key={i} style={S.card}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text)' }}>{msg.name} <span style={{ color: 'var(--muted)' }}>— {msg.email}</span></span>
+              <span style={{ fontSize: '10px', color: 'var(--muted2)' }}>{new Date(msg.createdAt).toLocaleString()}</span>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8, margin: 0 }}>{msg.message}</p>
           </div>
-          <button onClick={() => { sessionStorage.removeItem('admin_token'); setToken(null); setData(null) }} style={{ ...STYLE.btn, background: 'none', color: 'var(--muted)', border: '0.5px solid var(--border)' }}>
-            Logout
-          </button>
-        </div>
+        ))}
+      </div>
+    </>
+  )
+}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '48px' }}>
-          {[
-            { key: 'Total Views', val: data?.views ?? 0 },
-            { key: 'Messages', val: data?.messages?.length ?? 0 },
-            { key: 'CV Downloads', val: data?.downloads ?? 0 },
-          ].map(s => (
-            <div key={s.key} style={STYLE.stat}>
-              <div style={STYLE.statVal}>{s.val}</div>
-              <div style={STYLE.statKey}>{s.key}</div>
-            </div>
-          ))}
-        </div>
+// ── Project form ───────────────────────────────────────────────────────
+const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', content: '', tags: '', status: 'unfinished', url: '', guideUrl: '' }
 
-        <div style={STYLE.label}>// messages</div>
-        <div style={{ marginTop: '16px' }}>
-          {data?.messages?.length === 0 && (
-            <p style={{ fontSize: '13px', color: 'var(--muted)' }}>No messages yet.</p>
-          )}
-          {data?.messages?.map((msg, i) => (
-            <div key={i} style={STYLE.message}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                <span style={{ fontSize: '13px', color: 'var(--text)' }}>{msg.name} <span style={{ color: 'var(--muted)' }}>— {msg.email}</span></span>
-                <span style={{ fontSize: '10px', color: 'var(--muted2)' }}>{new Date(msg.createdAt).toLocaleString()}</span>
+function ProjectForm({ initial, onSave, onCancel }) {
+  const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '' } : EMPTY_PROJECT)
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  return (
+    <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <input style={S.input} placeholder="id (slug)" value={form.id} onChange={set('id')} disabled={!!initial} />
+        <input style={S.input} placeholder="name" value={form.name} onChange={set('name')} />
+        <input style={S.input} placeholder="year" value={form.year} onChange={set('year')} />
+        <select style={{ ...S.input, marginBottom: '8px' }} value={form.status} onChange={set('status')}>
+          {['live', 'unfinished', 'on hold', 'shipped'].map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <input style={S.input} placeholder="url (optional)" value={form.url} onChange={set('url')} />
+        <input style={S.input} placeholder="guideUrl (optional)" value={form.guideUrl} onChange={set('guideUrl')} />
+      </div>
+      <input style={S.input} placeholder="tags (comma separated)" value={form.tags} onChange={set('tags')} />
+      <textarea style={S.textarea} rows={3} placeholder="short description" value={form.desc} onChange={set('desc')} />
+      <textarea style={{ ...S.textarea, minHeight: '200px' }} rows={12} placeholder="content (markdown)" value={form.content} onChange={set('content')} />
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), _id: initial?._id })}>
+          {initial ? 'save changes' : 'create project'}
+        </button>
+        <button style={S.btnGhost} onClick={onCancel}>cancel</button>
+      </div>
+    </div>
+  )
+}
+
+function ProjectsTab({ headers }) {
+  const [projects, setProjects] = useState([])
+  const [editing, setEditing] = useState(null)
+  const [creating, setCreating] = useState(false)
+
+  const load = () => fetch('/api/projects').then(r => r.json()).then(setProjects).catch(() => {})
+  useEffect(() => { load() }, [])
+
+  const save = async (data) => {
+    const isNew = !data._id
+    const res = await fetch('/api/admin/projects', { method: isNew ? 'POST' : 'PUT', headers, body: JSON.stringify(data) })
+    if (res.ok) { setEditing(null); setCreating(false); load() }
+  }
+
+  const remove = async (_id) => {
+    if (!confirm('Delete this project?')) return
+    await fetch('/api/admin/projects', { method: 'DELETE', headers, body: JSON.stringify({ _id }) })
+    load()
+  }
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+        <button style={S.btn} onClick={() => { setCreating(true); setEditing(null) }}>+ new project</button>
+      </div>
+      {creating && <ProjectForm onSave={save} onCancel={() => setCreating(false)} />}
+      {projects.map(p => (
+        <div key={p._id}>
+          {editing === p._id
+            ? <ProjectForm initial={p} onSave={save} onCancel={() => setEditing(null)} />
+            : (
+              <div style={S.card}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.name}</span>
+                    <span style={{ fontSize: '10px', color: 'var(--muted)', marginLeft: '12px' }}>{p.year} · {p.status}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>
+                    <button style={S.btnDanger} onClick={() => remove(p._id)}>delete</button>
+                  </div>
+                </div>
               </div>
-              <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8, margin: 0 }}>{msg.message}</p>
-            </div>
+            )
+          }
+        </div>
+      ))}
+    </>
+  )
+}
+
+// ── Post form ──────────────────────────────────────────────────────────
+const EMPTY_POST = { slug: '', title: '', description: '', content: '', published: false }
+
+function PostForm({ initial, onSave, onCancel }) {
+  const [form, setForm] = useState(initial || EMPTY_POST)
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  return (
+    <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <input style={S.input} placeholder="slug (url-friendly)" value={form.slug} onChange={set('slug')} disabled={!!initial} />
+        <input style={S.input} placeholder="title" value={form.title} onChange={set('title')} />
+      </div>
+      <input style={S.input} placeholder="short description" value={form.description} onChange={set('description')} />
+      <textarea style={{ ...S.textarea, minHeight: '300px' }} rows={16} placeholder="content (markdown)" value={form.content} onChange={set('content')} />
+      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--muted)', marginBottom: '12px', cursor: 'pointer' }}>
+        <input type="checkbox" checked={form.published} onChange={e => setForm(f => ({ ...f, published: e.target.checked }))} />
+        published
+      </label>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button style={S.btn} onClick={() => onSave({ ...form, _id: initial?._id })}>
+          {initial ? 'save changes' : 'create post'}
+        </button>
+        <button style={S.btnGhost} onClick={onCancel}>cancel</button>
+      </div>
+    </div>
+  )
+}
+
+function PostsTab({ headers }) {
+  const [posts, setPosts] = useState([])
+  const [editing, setEditing] = useState(null)
+  const [creating, setCreating] = useState(false)
+
+  const load = async () => {
+    const res = await fetch('/api/admin/data', { headers })
+    const data = await res.json()
+    setPosts(data.posts || [])
+  }
+  useEffect(() => { load() }, [])
+
+  const save = async (data) => {
+    const isNew = !data._id
+    const res = await fetch('/api/admin/posts', { method: isNew ? 'POST' : 'PUT', headers, body: JSON.stringify(data) })
+    if (res.ok) { setEditing(null); setCreating(false); load() }
+  }
+
+  const remove = async (_id) => {
+    if (!confirm('Delete this post?')) return
+    await fetch('/api/admin/posts', { method: 'DELETE', headers, body: JSON.stringify({ _id }) })
+    load()
+  }
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+        <button style={S.btn} onClick={() => { setCreating(true); setEditing(null) }}>+ new post</button>
+      </div>
+      {creating && <PostForm onSave={save} onCancel={() => setCreating(false)} />}
+      {posts.map(p => (
+        <div key={p._id}>
+          {editing === p._id
+            ? <PostForm initial={p} onSave={save} onCancel={() => setEditing(null)} />
+            : (
+              <div style={S.card}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.title}</span>
+                    <span style={{ fontSize: '10px', color: p.published ? 'var(--accent2)' : 'var(--muted)', marginLeft: '12px' }}>{p.published ? 'published' : 'draft'}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>
+                    <button style={S.btnDanger} onClick={() => remove(p._id)}>delete</button>
+                  </div>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      ))}
+    </>
+  )
+}
+
+// ── Main Admin ─────────────────────────────────────────────────────────
+export default function Admin() {
+  const { token, setToken, headers } = useAuth()
+  const [data, setData] = useState(null)
+  const [tab, setTab] = useState('messages')
+
+  useEffect(() => {
+    if (!token) return
+    fetch('/api/admin/data', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setData(d); else { sessionStorage.removeItem('admin_token'); setToken(null) } })
+      .catch(() => {})
+  }, [token])
+
+  if (!token) return <Login onLogin={setToken} />
+
+  return (
+    <div style={S.page}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+          <div>
+            <div style={S.label}>// admin</div>
+            <h1 style={{ fontSize: '24px', fontWeight: 300 }}>Dashboard</h1>
+          </div>
+          <button onClick={() => { sessionStorage.removeItem('admin_token'); setToken(null) }} style={S.btnGhost}>Logout</button>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0', marginBottom: '40px', borderBottom: '0.5px solid var(--border)' }}>
+          {TABS.map(t => (
+            <button key={t} onClick={() => setTab(t)} style={{
+              fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase',
+              background: 'none', border: 'none', borderBottom: tab === t ? '1.5px solid var(--accent)' : '1.5px solid transparent',
+              color: tab === t ? 'var(--accent)' : 'var(--muted)', padding: '8px 20px', cursor: 'pointer', marginBottom: '-0.5px',
+            }}>{t}</button>
           ))}
         </div>
+
+        {tab === 'messages' && <MessagesTab data={data} />}
+        {tab === 'projects' && <ProjectsTab headers={headers} />}
+        {tab === 'posts' && <PostsTab headers={headers} />}
       </div>
     </div>
   )

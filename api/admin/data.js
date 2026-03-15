@@ -17,15 +17,17 @@ export default async function handler(req, res) {
 
   try {
     const db = await getDb()
-    const [messages, viewDoc, downloads] = await Promise.all([
+    const [messages, viewDoc, downloads, posts] = await Promise.all([
       db.collection('messages').find().sort({ createdAt: -1 }).toArray(),
       db.collection('views').findOne({ _id: 'total' }),
       db.collection('cv_downloads').countDocuments(),
+      db.collection('posts').find().sort({ date: -1 }).toArray(),
     ])
     return res.status(200).json({
       messages,
       views: viewDoc?.count ?? 0,
       downloads,
+      posts,
     })
   } catch (err) {
     console.error(err)
