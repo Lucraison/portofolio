@@ -60,12 +60,20 @@ export default function Hero() {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             View projects
           </a>
           <a href="#contact" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Get in touch
+          </a>
+          <a
+            href="/ITCVNicolasHerrera.pdf"
+            download
+            onClick={() => fetch('/api/cv', { method: 'POST' }).catch(() => {})}
+            style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}
+          >
+            Download CV
           </a>
         </div>
       </div>
