@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ProjectCard from './ProjectCard'
 
 export default function Projects() {
   const [projects, setProjects] = useState([])
+  const navigate = useNavigate()
+
 
   useEffect(() => {
     fetch('/api/projects')
@@ -10,6 +13,8 @@ export default function Projects() {
       .then(setProjects)
       .catch(() => {})
   }, [])
+
+  const visible = projects.slice(0, 3)
 
   return (
     <section id="projects" style={{ padding: '100px 40px', borderBottom: '0.5px solid var(--border)' }}>
@@ -21,8 +26,17 @@ export default function Projects() {
           Things I've built
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
+          {visible.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
         </div>
+        {projects.length > 3 && (
+          <button onClick={() => navigate('/projects')} style={{
+            marginTop: '24px', fontFamily: 'var(--mono)', fontSize: '12px', letterSpacing: '0.1em',
+            textTransform: 'uppercase', background: 'none', border: '0.5px solid var(--border)',
+            color: 'var(--muted)', padding: '10px 24px', cursor: 'pointer', width: '100%',
+          }}>
+            all projects →
+          </button>
+        )}
       </div>
     </section>
   )

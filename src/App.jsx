@@ -10,6 +10,7 @@ import Education from './components/Education'
 import Notes from './components/Notes'
 import Contact from './components/Contact'
 import ProjectDetail from './components/ProjectDetail'
+import AllProjects from './components/AllProjects'
 import Blog from './components/Blog'
 import BlogPost from './components/BlogPost'
 import Admin from './components/Admin'
@@ -74,6 +75,7 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/guides/vps" element={<GuideVPS />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/projects" element={<AllProjects />} />
       <Route path="/projects/:id" element={<ProjectDetail />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
