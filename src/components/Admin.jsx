@@ -66,21 +66,24 @@ export default function Admin() {
 
   if (!token) {
     return (
-      <div style={STYLE.page}>
-        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-          <div style={STYLE.label}>// admin</div>
-          <h1 style={STYLE.h1}>Login</h1>
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', padding: '40px' }}>
+        <div style={{ width: '100%', maxWidth: '360px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <span style={{ fontSize: '20px', color: 'var(--accent)', letterSpacing: '0.05em' }}>NH_</span>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '8px' }}>admin access</div>
+          </div>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <input
               type="password"
               placeholder="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              style={STYLE.input}
+              style={{ ...STYLE.input, maxWidth: '100%' }}
               required
+              autoFocus
             />
-            <button type="submit" style={STYLE.btn}>Enter →</button>
-            {error && <span style={{ fontSize: '11px', color: '#e05c5c', marginTop: '12px' }}>{error}</span>}
+            <button type="submit" style={{ ...STYLE.btn, marginTop: 0, padding: '12px 24px' }}>Enter →</button>
+            {error && <span style={{ fontSize: '11px', color: '#e05c5c', textAlign: 'center' }}>{error}</span>}
           </form>
         </div>
       </div>
