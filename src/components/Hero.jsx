@@ -54,11 +54,9 @@ export default function Hero() {
           "Developer based in Antwerp. Building things as I go."
         </p>
 
-        {views !== null && (
-          <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
-            <span style={{ color: 'var(--accent)' }}>●</span> {views} visits
-          </div>
-        )}
+        <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
+          <span style={{ color: 'var(--accent)' }}>●</span> {views !== null ? `${views} visits` : '— visits'}
+        </div>
 
         <div style={{ display: 'flex', gap: '16px' }}>
           <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>

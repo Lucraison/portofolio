@@ -1,7 +1,6 @@
-import { MongoClient } from 'mongodb'
 import { Resend } from 'resend'
+import { getDb } from './_db.js'
 
-const client = new MongoClient(process.env.MONGODB_URI)
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export default async function handler(req, res) {
@@ -20,8 +19,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    await client.connect()
-    const db = client.db('portfolio')
+    const db = await getDb()
     await db.collection('messages').insertOne({
       name,
       email,

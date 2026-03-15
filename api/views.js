@@ -1,6 +1,4 @@
-import { MongoClient } from 'mongodb'
-
-const client = new MongoClient(process.env.MONGODB_URI)
+import { getDb } from './_db.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -8,8 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    await client.connect()
-    const db = client.db('portfolio')
+    const db = await getDb()
     const col = db.collection('views')
 
     if (req.method === 'POST') {
