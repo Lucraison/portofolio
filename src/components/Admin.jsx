@@ -111,11 +111,21 @@ function ImageUpload({ onUploaded, label = 'upload image' }) {
 }
 
 // ── Project form ───────────────────────────────────────────────────────
-const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', content: '', tags: '', status: 'unfinished', url: '', guideUrl: '', images: '' }
+const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', tags: '', status: 'unfinished', url: '', guideUrl: '' }
 
 function ProjectForm({ initial, onSave, onCancel }) {
-  const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '', images: initial.images?.join(', ') || '' } : EMPTY_PROJECT)
+  const initBlocks = () => {
+    if (initial?.blocks?.length) return initial.blocks
+    if (initial?.content) return [{ type: 'text', value: initial.content }]
+    return [{ type: 'text', value: '' }]
+  }
+  const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '' } : EMPTY_PROJECT)
+  const [blocks, setBlocks] = useState(initBlocks)
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  const setBlock = (i, val) => setBlocks(bs => bs.map((b, j) => j === i ? { ...b, value: val } : b))
+  const addBlock = (type) => setBlocks(bs => [...bs, { type, value: '' }])
+  const removeBlock = (i) => setBlocks(bs => bs.filter((_, j) => j !== i))
 
   return (
     <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
@@ -129,13 +139,35 @@ function ProjectForm({ initial, onSave, onCancel }) {
         <input style={S.input} placeholder="url (optional)" value={form.url} onChange={set('url')} />
         <input style={S.input} placeholder="guideUrl (optional)" value={form.guideUrl} onChange={set('guideUrl')} />
       </div>
+      <textarea style={{ ...S.textarea, marginBottom: '8px' }} rows={2} placeholder="short description" value={form.desc} onChange={set('desc')} />
       <input style={S.input} placeholder="tags (comma separated)" value={form.tags} onChange={set('tags')} />
-      <input style={S.input} placeholder="image URLs (comma separated)" value={form.images} onChange={set('images')} />
-      <ImageUpload label="+ upload image" onUploaded={url => setForm(f => ({ ...f, images: f.images ? f.images + ', ' + url : url }))} />
-      <textarea style={S.textarea} rows={3} placeholder="short description" value={form.desc} onChange={set('desc')} />
-      <textarea style={{ ...S.textarea, minHeight: '200px' }} rows={12} placeholder="content (markdown)" value={form.content} onChange={set('content')} />
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), images: form.images.split(',').map(t => t.trim()).filter(Boolean), _id: initial?._id })}>
+
+      <div style={{ marginTop: '8px' }}>
+        {blocks.map((block, i) => (
+          <div key={i} style={{ marginBottom: '8px', border: '0.5px solid var(--border)', padding: '12px', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{block.type}</span>
+              {blocks.length > 1 && <button style={{ ...S.btnDanger, padding: '2px 10px' }} onClick={() => removeBlock(i)}>×</button>}
+            </div>
+            {block.type === 'text'
+              ? <textarea style={{ ...S.textarea, marginBottom: 0, minHeight: '120px' }} placeholder="content (markdown)" value={block.value} onChange={e => setBlock(i, e.target.value)} />
+              : (
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="image URL" value={block.value} onChange={e => setBlock(i, e.target.value)} />
+                  <ImageUpload label="+ upload" onUploaded={url => setBlock(i, url)} />
+                </div>
+              )
+            }
+          </div>
+        ))}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+          <button style={S.btnGhost} onClick={() => addBlock('text')}>+ text</button>
+          <button style={S.btnGhost} onClick={() => addBlock('image')}>+ image</button>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+        <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), blocks, _id: initial?._id })}>
           {initial ? 'save changes' : 'create project'}
         </button>
         <button style={S.btnGhost} onClick={onCancel}>cancel</button>

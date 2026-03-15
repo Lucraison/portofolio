@@ -46,9 +46,9 @@ export default function ProjectDetail() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--sans)' }}>
 
-      {lightbox !== null && (
+      {lightbox && (
         <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: '40px' }}>
-          <img src={project.images[lightbox]} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', border: '0.5px solid var(--border-hi)' }} />
+          <img src={lightbox} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', border: '0.5px solid var(--border-hi)' }} />
         </div>
       )}
 
@@ -93,26 +93,23 @@ export default function ProjectDetail() {
         )}
 
         <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: '48px', marginBottom: '64px' }}>
-          <ReactMarkdown components={components}>{project.content}</ReactMarkdown>
+          {project.blocks?.length > 0
+            ? project.blocks.map((block, i) => (
+                block.type === 'text'
+                  ? <ReactMarkdown key={i} components={components}>{block.value}</ReactMarkdown>
+                  : (
+                    <div key={i} style={{ margin: '32px 0', border: '0.5px solid var(--border)', overflow: 'hidden', cursor: 'zoom-in' }}
+                      onClick={() => setLightbox(block.value)}>
+                      <img src={block.value} alt="" style={{ width: '100%', maxHeight: '480px', objectFit: 'cover', display: 'block', transition: 'transform 0.3s ease' }}
+                        onMouseEnter={e => e.target.style.transform = 'scale(1.02)'}
+                        onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                      />
+                    </div>
+                  )
+              ))
+            : <ReactMarkdown components={components}>{project.content}</ReactMarkdown>
+          }
         </div>
-
-        {project.images && project.images.length > 0 && (
-          <div>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '24px' }}>
-              // screenshots
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
-              {project.images.map((src, i) => (
-                <div key={i} onClick={() => setLightbox(i)} style={{ border: '0.5px solid var(--border)', overflow: 'hidden', cursor: 'zoom-in', background: 'var(--bg1)' }}>
-                  <img src={src} alt={`${project.name} screenshot ${i + 1}`} style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block', transition: 'transform 0.3s ease' }}
-                    onMouseEnter={e => e.target.style.transform = 'scale(1.03)'}
-                    onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {project.url && (
           <a href={project.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '48px', fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
