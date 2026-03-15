@@ -22,9 +22,9 @@ export default function Hero() {
       .catch(() => setViews(null))
   }, [])
   const typedRef = useTypewriter([
-    'developer & ai enthusiast',
-    'self-taught, still learning',
-    'backend systems builder',
+    'open to work',
+    'vibe coder',
+    'full stack in progress',
     'based in antwerp, belgium',
     '67',
   ])
