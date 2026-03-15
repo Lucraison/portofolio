@@ -66,7 +66,11 @@ function MessagesTab({ data, headers, onRefresh }) {
   const byReferrer = logs.reduce((acc, v) => {
     let k = 'direct'
     if (v.referrer) {
-      try { k = new URL(v.referrer).hostname.replace(/^www\./, '') } catch { k = v.referrer }
+      try {
+        const host = new URL(v.referrer).hostname.replace(/^www\./, '')
+        if (host === 'nherrera.dev' || host.endsWith('.vercel.app') || host === 'localhost') return acc
+        k = host
+      } catch { k = v.referrer }
     }
     acc[k] = (acc[k] || 0) + 1
     return acc
