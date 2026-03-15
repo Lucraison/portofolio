@@ -11,6 +11,11 @@ export default async function handler(req, res) {
     const col = db.collection('views')
 
     if (req.method === 'POST') {
+      const ua = req.headers['user-agent'] || ''
+      if (/vercel|bot|crawler|spider|prerender/i.test(ua)) {
+        const doc = await col.findOne({ _id: 'total' })
+        return res.status(200).json({ count: doc?.count ?? 0 })
+      }
       const referrer = req.headers['referer'] || req.headers['referrer'] || null
       const country = req.headers['x-vercel-ip-country'] || null
       await Promise.all([
