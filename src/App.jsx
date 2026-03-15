@@ -9,6 +9,7 @@ import Skills from './components/Skills'
 import Education from './components/Education'
 import Contact from './components/Contact'
 import ProjectDetail from './components/ProjectDetail'
+import Admin from './components/Admin'
 import useReveal from './hooks/useReveal'
 import GuideVPS from './components/guides/GuideVPS'
 
@@ -59,6 +60,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/guides/vps" element={<GuideVPS />} />
+      <Route path="/admin" element={<Admin />} />
       <Route path="/projects/:id" element={<ProjectDetail />} />
     </Routes>
   )
