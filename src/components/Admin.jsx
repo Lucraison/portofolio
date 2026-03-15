@@ -122,6 +122,8 @@ function ProjectForm({ initial, onSave, onCancel }) {
   const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '' } : EMPTY_PROJECT)
   const [blocks, setBlocks] = useState(initBlocks)
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+  const toSlug = (str) => str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  const setName = (e) => setForm(f => ({ ...f, name: e.target.value, ...(!initial && !f._slugEdited ? { id: toSlug(e.target.value) } : {}) }))
 
   const setBlock = (i, val) => setBlocks(bs => bs.map((b, j) => j === i ? { ...b, value: val } : b))
   const addBlock = (type) => setBlocks(bs => [...bs, { type, value: '' }])
@@ -130,8 +132,11 @@ function ProjectForm({ initial, onSave, onCancel }) {
   return (
     <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
-        <input style={S.input} placeholder="id (slug)" value={form.id} onChange={set('id')} disabled={!!initial} />
-        <input style={S.input} placeholder="name" value={form.name} onChange={set('name')} />
+        <div>
+          <input style={S.input} placeholder="id (slug)" value={form.id} onChange={e => { setForm(f => ({ ...f, id: e.target.value, _slugEdited: true })) }} disabled={!!initial} />
+          {!initial && <div style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '-4px', marginBottom: '8px', paddingLeft: '2px' }}>url: /projects/{form.id || 'your-slug'}</div>}
+        </div>
+        <input style={S.input} placeholder="name" value={form.name} onChange={setName} />
         <input style={S.input} placeholder="year" value={form.year} onChange={set('year')} />
         <select style={{ ...S.input, marginBottom: '8px' }} value={form.status} onChange={set('status')}>
           {['live', 'unfinished', 'on hold', 'shipped'].map(s => <option key={s} value={s}>{s}</option>)}
