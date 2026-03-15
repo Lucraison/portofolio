@@ -52,7 +52,7 @@ export default function Nav({ active }) {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: '56px',
+        padding: '0 32px', height: '64px',
         background: scrolled || menuOpen ? 'var(--nav-bg)' : 'transparent',
         borderBottom: scrolled || menuOpen ? '0.5px solid var(--border)' : '0.5px solid transparent',
         transition: 'background 0.3s, border-color 0.3s',
@@ -67,9 +67,9 @@ export default function Nav({ active }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             {NAV_LINKS.map(link => (
               <a key={link} href={`#${link}`} style={{
-                fontFamily: 'var(--mono)', fontSize: '11px',
+                fontFamily: 'var(--mono)', fontSize: '13px',
                 color: active === link ? 'var(--accent)' : 'var(--muted)',
-                textDecoration: 'none', letterSpacing: '0.12em', textTransform: 'uppercase',
+                textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase',
                 transition: 'color 0.2s',
               }}>{link}</a>
             ))}
