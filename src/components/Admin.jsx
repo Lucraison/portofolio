@@ -78,11 +78,43 @@ function MessagesTab({ data }) {
   )
 }
 
+// ── Image upload ───────────────────────────────────────────────────────
+const CLOUDINARY_CLOUD = 'dogjozb8d'
+const CLOUDINARY_PRESET = 'portofolio-images'
+
+function ImageUpload({ onUploaded, label = 'upload image' }) {
+  const [uploading, setUploading] = useState(false)
+
+  const handle = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('upload_preset', CLOUDINARY_PRESET)
+    try {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.secure_url) onUploaded(data.secure_url)
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  return (
+    <label style={{ ...S.btnGhost, display: 'inline-block', cursor: 'pointer', marginBottom: '8px', textAlign: 'center' }}>
+      {uploading ? 'uploading...' : label}
+      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handle} />
+    </label>
+  )
+}
+
 // ── Project form ───────────────────────────────────────────────────────
-const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', content: '', tags: '', status: 'unfinished', url: '', guideUrl: '' }
+const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', content: '', tags: '', status: 'unfinished', url: '', guideUrl: '', images: '' }
 
 function ProjectForm({ initial, onSave, onCancel }) {
-  const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '' } : EMPTY_PROJECT)
+  const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '', images: initial.images?.join(', ') || '' } : EMPTY_PROJECT)
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
   return (
@@ -98,10 +130,12 @@ function ProjectForm({ initial, onSave, onCancel }) {
         <input style={S.input} placeholder="guideUrl (optional)" value={form.guideUrl} onChange={set('guideUrl')} />
       </div>
       <input style={S.input} placeholder="tags (comma separated)" value={form.tags} onChange={set('tags')} />
+      <input style={S.input} placeholder="image URLs (comma separated)" value={form.images} onChange={set('images')} />
+      <ImageUpload label="+ upload image" onUploaded={url => setForm(f => ({ ...f, images: f.images ? f.images + ', ' + url : url }))} />
       <textarea style={S.textarea} rows={3} placeholder="short description" value={form.desc} onChange={set('desc')} />
       <textarea style={{ ...S.textarea, minHeight: '200px' }} rows={12} placeholder="content (markdown)" value={form.content} onChange={set('content')} />
       <div style={{ display: 'flex', gap: '8px' }}>
-        <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), _id: initial?._id })}>
+        <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), images: form.images.split(',').map(t => t.trim()).filter(Boolean), _id: initial?._id })}>
           {initial ? 'save changes' : 'create project'}
         </button>
         <button style={S.btnGhost} onClick={onCancel}>cancel</button>
@@ -162,7 +196,7 @@ function ProjectsTab({ headers }) {
 }
 
 // ── Post form ──────────────────────────────────────────────────────────
-const EMPTY_POST = { slug: '', title: '', description: '', content: '', published: false }
+const EMPTY_POST = { slug: '', title: '', description: '', coverImage: '', content: '', published: false }
 
 function PostForm({ initial, onSave, onCancel }) {
   const [form, setForm] = useState(initial || EMPTY_POST)
@@ -175,6 +209,10 @@ function PostForm({ initial, onSave, onCancel }) {
         <input style={S.input} placeholder="title" value={form.title} onChange={set('title')} />
       </div>
       <input style={S.input} placeholder="short description" value={form.description} onChange={set('description')} />
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+        <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="cover image URL (optional)" value={form.coverImage || ''} onChange={set('coverImage')} />
+        <ImageUpload label="+ upload" onUploaded={url => setForm(f => ({ ...f, coverImage: url }))} />
+      </div>
       <textarea style={{ ...S.textarea, minHeight: '300px' }} rows={16} placeholder="content (markdown)" value={form.content} onChange={set('content')} />
       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--muted)', marginBottom: '12px', cursor: 'pointer' }}>
         <input type="checkbox" checked={form.published} onChange={e => setForm(f => ({ ...f, published: e.target.checked }))} />

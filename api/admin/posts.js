@@ -15,11 +15,11 @@ export default async function handler(req, res) {
   const col = db.collection('posts')
 
   if (req.method === 'POST') {
-    const { slug, title, description, content, published } = req.body
+    const { slug, title, description, coverImage, content, published } = req.body
     if (!slug || !title) return res.status(400).json({ error: 'slug and title are required' })
     const existing = await col.findOne({ slug })
     if (existing) return res.status(409).json({ error: 'Post with this slug already exists' })
-    const post = { slug, title, description: description || '', content: content || '', published: published ?? false, date: new Date(), createdAt: new Date(), updatedAt: new Date() }
+    const post = { slug, title, description: description || '', coverImage: coverImage || '', content: content || '', published: published ?? false, date: new Date(), createdAt: new Date(), updatedAt: new Date() }
     await col.insertOne(post)
     return res.status(201).json(post)
   }
