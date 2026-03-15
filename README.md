@@ -1,16 +1,38 @@
 # nherrera.dev
 
-Personal portfolio site. Built to showcase my projects and document things I've learned.
+Personal portfolio — **[nherrera.dev](https://nherrera.dev)**
 
-**Live at:** [nherrera.dev](https://nherrera.dev)
+![og](public/og.png)
 
 ## Stack
 
-- React + Vite
-- React Router
-- Markdown for content
-- Deployed on Vercel
+- **Frontend** — React 19 + Vite, React Router
+- **Backend** — Vercel Serverless Functions (Node.js)
+- **Database** — MongoDB Atlas
+- **Media** — Cloudinary (image uploads)
+- **Auth** — JWT (admin dashboard)
+- **Hosting** — Vercel
 
-## Structure
+## Features
 
-Projects and guides are written in plain Markdown — no CMS, no database. Easy to update, easy to read.
+- Blog / notes with Markdown support and cover images
+- Project showcase with block-based content editor
+- Admin dashboard — manage posts, projects, messages
+- Visit tracking — total views, country, referrer source
+- CV download counter
+- Contact form
+- SEO meta tags + Open Graph image
+
+## Local development
+
+```bash
+npm install
+vercel dev
+```
+
+Requires a `.env` file with:
+
+```
+MONGODB_URI=...
+JWT_SECRET=...
+```
