@@ -10,8 +10,8 @@ export default function Hero() {
     if (!visited) sessionStorage.setItem('viewed', '1')
     fetch('/api/views', { method })
       .then(r => r.json())
-      .then(d => setViews(d.count))
-      .catch(() => {})
+      .then(d => setViews(typeof d.count === 'number' ? d.count : null))
+      .catch(() => setViews(null))
   }, [])
   const typedRef = useTypewriter([
     'developer & ai enthusiast',
@@ -54,9 +54,11 @@ export default function Hero() {
           "Developer based in Antwerp. Building things as I go."
         </p>
 
-        <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
-          <span style={{ color: 'var(--accent)' }}>●</span> {views !== null ? `${views} visits` : '— visits'}
-        </div>
+        {views !== null && (
+          <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
+            <span style={{ color: 'var(--accent)' }}>●</span> {views} visits
+          </div>
+        )}
 
         <div style={{ display: 'flex', gap: '16px' }}>
           <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
