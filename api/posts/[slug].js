@@ -7,7 +7,11 @@ export default async function handler(req, res) {
 
   try {
     const db = await getDb()
-    const post = await db.collection('posts').findOne({ slug, published: true })
+    const post = await db.collection('posts').findOneAndUpdate(
+      { slug, published: true },
+      { $inc: { views: 1 } },
+      { returnDocument: 'after' }
+    )
     if (!post) return res.status(404).json({ error: 'Post not found' })
     return res.status(200).json(post)
   } catch (err) {

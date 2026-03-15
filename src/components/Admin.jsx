@@ -230,6 +230,7 @@ function PostsTab({ headers }) {
                   <div>
                     <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.title}</span>
                     <span style={{ fontSize: '10px', color: p.published ? 'var(--accent2)' : 'var(--muted)', marginLeft: '12px' }}>{p.published ? 'published' : 'draft'}</span>
+                    {p.views > 0 && <span style={{ fontSize: '10px', color: 'var(--muted)', marginLeft: '8px' }}>· {p.views} reads</span>}
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>
