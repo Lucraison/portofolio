@@ -18,9 +18,10 @@ export default async function handler(req, res) {
       }
       const referrer = req.headers['referer'] || req.headers['referrer'] || null
       const country = req.headers['x-vercel-ip-country'] || null
+      const device = /mobile|android|iphone|ipad|ipod/i.test(ua) ? 'mobile' : 'desktop'
       await Promise.all([
         col.updateOne({ _id: 'total' }, { $inc: { count: 1 } }, { upsert: true }),
-        db.collection('visit_logs').insertOne({ at: new Date(), referrer, country }),
+        db.collection('visit_logs').insertOne({ at: new Date(), referrer, country, device }),
       ])
     }
 

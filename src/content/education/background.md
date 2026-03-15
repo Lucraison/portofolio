@@ -17,7 +17,7 @@ Broad curriculum covering the fundamentals. Not everything stuck, but the founda
 - Game development basics
 - Database design
 
-## Graduaat Programmeren — AP Hogeschool (2023 — 2025)
+## Graduaat Programmeren — AP Hogeschool (2024 — 2026)
 
 More focused, more practical. Every subject connected to the next.
 

@@ -77,6 +77,13 @@ function MessagesTab({ data, headers, onRefresh }) {
   }, {})
   const referrerSorted = Object.entries(byReferrer).sort((a, b) => b[1] - a[1]).slice(0, 8)
 
+  const byDevice = logs.reduce((acc, v) => {
+    const k = v.device || 'unknown'
+    acc[k] = (acc[k] || 0) + 1
+    return acc
+  }, {})
+  const deviceSorted = Object.entries(byDevice).sort((a, b) => b[1] - a[1])
+
   return (
     <>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
@@ -95,7 +102,7 @@ function MessagesTab({ data, headers, onRefresh }) {
       {logs.length > 0 && (
         <>
           <div style={S.label}>// visit sources</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px', marginBottom: '48px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginTop: '16px', marginBottom: '48px' }}>
             <div>
               <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>by country</div>
               {countrySorted.map(([country, count]) => (
@@ -107,9 +114,20 @@ function MessagesTab({ data, headers, onRefresh }) {
             </div>
             <div>
               <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>by referrer</div>
-              {referrerSorted.map(([ref, count]) => (
-                <div key={ref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>{ref}</span>
+              {referrerSorted.length === 0
+                ? <span style={{ fontSize: '12px', color: 'var(--muted2)' }}>none yet</span>
+                : referrerSorted.map(([ref, count]) => (
+                  <div key={ref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '120px' }}>{ref}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>{count}</span>
+                  </div>
+                ))}
+            </div>
+            <div>
+              <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>by device</div>
+              {deviceSorted.map(([device, count]) => (
+                <div key={device} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{device}</span>
                   <span style={{ fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>{count}</span>
                 </div>
               ))}
