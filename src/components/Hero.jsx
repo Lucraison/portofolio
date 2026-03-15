@@ -87,9 +87,10 @@ export default function Hero() {
 
         {lastCommit?.length > 0 && (
           <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.08em', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ color: 'var(--muted)', opacity: 0.5, marginBottom: '4px' }}>last commit:</span>
             {lastCommit.map((msg, i) => (
               <span key={i} style={{ color: 'var(--muted)', opacity: 1 - i * 0.35 }}>
-                {i === 0 ? 'last commit: ' : ''} "{msg}"
+                "{msg}"
               </span>
             ))}
           </div>
