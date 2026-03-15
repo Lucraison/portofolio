@@ -70,7 +70,7 @@ export default function Hero() {
             Get in touch
           </a>
           <a
-            href="/ITCVNicolasHerrera.pdf"
+            href="/IT-CVNicolasHerrera.pdf"
             download
             onClick={() => fetch('/api/cv', { method: 'POST' }).catch(() => {})}
             style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}
