@@ -62,12 +62,6 @@ export default function Hero() {
           "Developer based in Antwerp. Building things as I go."
         </p>
 
-        {views !== null && (
-          <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: '24px' }}>
-            <span style={{ color: 'var(--accent)' }}>●</span> {views} visits
-          </div>
-        )}
-
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             View projects
@@ -85,11 +79,10 @@ export default function Hero() {
           </a>
         </div>
 
-        {lastCommit && (
-          <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted2)', letterSpacing: '0.08em', marginTop: '20px' }}>
-            git: "{lastCommit}"
-          </div>
-        )}
+        <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted2)', letterSpacing: '0.08em', marginTop: '20px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          {views !== null && <span><span style={{ color: 'var(--accent)' }}>●</span> {views} visits</span>}
+          {lastCommit && <span>git: "{lastCommit}"</span>}
+        </div>
       </div>
     </section>
   )
