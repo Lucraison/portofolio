@@ -81,7 +81,7 @@ export default function Hero() {
 
         <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted2)', letterSpacing: '0.08em', marginTop: '20px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           {views !== null && <span><span style={{ color: 'var(--accent)' }}>●</span> {views} visits</span>}
-          {lastCommit && <span>git: "{lastCommit}"</span>}
+          {lastCommit && <span>last commit: "{lastCommit}"</span>}
         </div>
       </div>
     </section>
