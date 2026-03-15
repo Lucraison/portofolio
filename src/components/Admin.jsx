@@ -171,7 +171,12 @@ function ProjectForm({ initial, onSave, onCancel }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--muted)', marginTop: '12px', cursor: 'pointer' }}>
+        <input type="checkbox" checked={form.featured ?? false} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} />
+        featured (show on homepage)
+      </label>
+
+      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
         <button style={S.btn} onClick={() => onSave({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), blocks, _id: initial?._id })}>
           {initial ? 'save changes' : 'create project'}
         </button>
@@ -217,6 +222,7 @@ function ProjectsTab({ headers }) {
                   <div>
                     <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.name}</span>
                     <span style={{ fontSize: '10px', color: 'var(--muted)', marginLeft: '12px' }}>{p.year} · {p.status}</span>
+                    {p.featured && <span style={{ fontSize: '10px', color: 'var(--accent)', marginLeft: '8px' }}>· featured</span>}
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>

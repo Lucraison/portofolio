@@ -17,6 +17,8 @@ export default function ProjectCard({ project }) {
         padding: '28px 32px',
         transition: 'all 0.25s ease',
         cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -50,7 +52,7 @@ export default function ProjectCard({ project }) {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '12px', marginTop: '20px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '20px', alignItems: 'center' }}>
         <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: hovered ? 'var(--accent)' : 'var(--muted)', letterSpacing: '0.08em', transition: 'color 0.2s' }}>
           read more →
         </div>

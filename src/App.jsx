@@ -21,7 +21,7 @@ const BASE_NAV = ['about', 'projects', 'skills', 'education', 'contact']
 
 function Home() {
   const [active, setActive] = useState('about')
-  const [hasPosts, setHasPosts] = useState(false)
+  const [hasPosts, setHasPosts] = useState(true)
 
   useReveal()
 

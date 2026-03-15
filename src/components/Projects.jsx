@@ -14,7 +14,8 @@ export default function Projects() {
       .catch(() => {})
   }, [])
 
-  const visible = projects.slice(0, 3)
+  const featured = projects.filter(p => p.featured)
+  const visible = featured.length > 0 ? featured : projects.slice(0, 3)
 
   return (
     <section id="projects" style={{ padding: '100px 40px', borderBottom: '0.5px solid var(--border)' }}>

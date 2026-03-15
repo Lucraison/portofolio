@@ -21,14 +21,14 @@ export default function AllProjects() {
         <span style={{ fontFamily: 'var(--mono)', fontSize: '14px', color: 'var(--accent)', letterSpacing: '0.05em', marginLeft: 'auto' }}>NH_</span>
       </nav>
 
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '120px 40px 80px' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 40px 80px' }}>
         <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>
           // projects
         </div>
         <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 300, color: 'var(--text)', marginBottom: '48px' }}>
           Everything I've built
         </h1>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(440px, 1fr))', gap: '16px' }}>
           {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
         </div>
       </div>
