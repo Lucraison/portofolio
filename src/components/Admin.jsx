@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 const TABS = ['messages', 'projects', 'posts']
 
 const S = {
-  page: { minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--mono)', padding: '80px 40px' },
+  page: { minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--mono)', padding: '80px 20px' },
   label: { fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' },
   stat: { border: '0.5px solid var(--border)', background: 'var(--bg1)', padding: '20px 24px', marginBottom: '12px' },
   statVal: { fontSize: '28px', fontWeight: 300, color: 'var(--accent)', marginBottom: '4px' },
@@ -56,7 +56,7 @@ function Login({ onLogin }) {
 function MessagesTab({ data }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '48px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '48px' }}>
         {[{ key: 'Total Views', val: data?.views ?? 0 }, { key: 'Messages', val: data?.messages?.length ?? 0 }, { key: 'CV Downloads', val: data?.downloads ?? 0 }].map(s => (
           <div key={s.key} style={S.stat}><div style={S.statVal}>{s.val}</div><div style={S.statKey}>{s.key}</div></div>
         ))}
@@ -87,7 +87,7 @@ function ProjectForm({ initial, onSave, onCancel }) {
 
   return (
     <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
         <input style={S.input} placeholder="id (slug)" value={form.id} onChange={set('id')} disabled={!!initial} />
         <input style={S.input} placeholder="name" value={form.name} onChange={set('name')} />
         <input style={S.input} placeholder="year" value={form.year} onChange={set('year')} />
@@ -170,7 +170,7 @@ function PostForm({ initial, onSave, onCancel }) {
 
   return (
     <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
         <input style={S.input} placeholder="slug (url-friendly)" value={form.slug} onChange={set('slug')} disabled={!!initial} />
         <input style={S.input} placeholder="title" value={form.title} onChange={set('title')} />
       </div>

@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
 
-const NAV_LINKS = ['about', 'projects', 'skills', 'education', 'contact']
-
 function getInitialTheme() {
   const stored = localStorage.getItem('theme')
   if (stored) return stored
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
-export default function Nav({ active }) {
+export default function Nav({ active, links = ['about', 'projects', 'skills', 'education', 'contact'] }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 600)
@@ -65,7 +63,7 @@ export default function Nav({ active }) {
         {/* desktop links */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-            {NAV_LINKS.map(link => (
+            {links.map(link => (
               <a key={link} href={`#${link}`} style={{
                 fontFamily: 'var(--mono)', fontSize: '13px',
                 color: active === link ? 'var(--accent)' : 'var(--muted)',
@@ -112,7 +110,7 @@ export default function Nav({ active }) {
           background: 'var(--bg)', borderBottom: '0.5px solid var(--border)',
           padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', gap: '4px'
         }}>
-          {NAV_LINKS.map(link => (
+          {links.map(link => (
             <a
               key={link}
               href={`#${link}`}
