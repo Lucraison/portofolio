@@ -6,9 +6,9 @@ export default function Hero() {
   const [lastCommit, setLastCommit] = useState(null)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/Lucraison/portofolio/commits?per_page=1')
+    fetch('https://api.github.com/repos/Lucraison/portofolio/commits?per_page=3')
       .then(r => r.json())
-      .then(d => setLastCommit(d[0]?.commit?.message?.split('\n')[0] ?? null))
+      .then(d => setLastCommit(d.map(c => c.commit.message.split('\n')[0])))
       .catch(() => {})
   }, [])
 
@@ -81,7 +81,15 @@ export default function Hero() {
 
         <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted2)', letterSpacing: '0.08em', marginTop: '20px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           {views !== null && <span><span style={{ color: 'var(--accent)' }}>●</span> {views} visits</span>}
-          {lastCommit && <span>last commit: "{lastCommit}"</span>}
+          {lastCommit?.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {lastCommit.map((msg, i) => (
+                <span key={i} style={{ opacity: 1 - i * 0.35 }}>
+                  {i === 0 ? 'last commit: ' : ''}"{msg}"
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
