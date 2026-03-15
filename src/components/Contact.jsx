@@ -16,7 +16,7 @@ const INPUT_STYLE = {
 export default function Contact() {
   const [copied, setCopied] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', message: '' })
-  const [status, setStatus] = useState(null) // 'sending' | 'success' | 'error'
+  const [status, setStatus] = useState(null) // 'sending' | 'success' | 'error' | 'ratelimit'
 
   const handleCopy = () => {
     navigator.clipboard.writeText('nicolas.nataniel79@gmail.com')
@@ -36,6 +36,8 @@ export default function Contact() {
       if (res.ok) {
         setStatus('success')
         setForm({ name: '', email: '', message: '' })
+      } else if (res.status === 429) {
+        setStatus('ratelimit')
       } else {
         setStatus('error')
       }
@@ -102,6 +104,7 @@ export default function Contact() {
               {status === 'sending' ? 'sending...' : 'send message →'}
             </button>
             {status === 'success' && <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--accent2)' }}>message sent.</span>}
+            {status === 'ratelimit' && <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: '#e05c5c' }}>please wait 15 minutes before sending another message.</span>}
             {status === 'error' && <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: '#e05c5c' }}>something went wrong. try email instead.</span>}
           </div>
         </form>

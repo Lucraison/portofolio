@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import { getDb } from './_db.js'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const RATE_LIMIT_MINUTES = 15
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -18,12 +19,28 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email' })
   }
 
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] ?? 'unknown'
+
   try {
     const db = await getDb()
+
+    const cutoff = new Date(Date.now() - RATE_LIMIT_MINUTES * 60 * 1000)
+    const recent = await db.collection('ratelimits').findOne({ ip, lastSubmit: { $gt: cutoff } })
+    if (recent) {
+      return res.status(429).json({ error: `Too many requests. Please wait ${RATE_LIMIT_MINUTES} minutes before sending another message.` })
+    }
+
+    await db.collection('ratelimits').updateOne(
+      { ip },
+      { $set: { lastSubmit: new Date() } },
+      { upsert: true }
+    )
+
     await db.collection('messages').insertOne({
       name,
       email,
       message,
+      ip,
       createdAt: new Date(),
     })
 
