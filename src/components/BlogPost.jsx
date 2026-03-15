@@ -77,8 +77,13 @@ export default function BlogPost() {
           <ReactMarkdown components={components}>{post.content}</ReactMarkdown>
         </div>
         {post.coverImage && (
-          <div style={{ marginTop: '48px', border: '0.5px solid var(--border)', overflow: 'hidden' }}>
-            <img src={post.coverImage} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
+          <div style={{ marginTop: '48px' }}>
+            <div style={{ border: '0.5px solid var(--border)', overflow: 'hidden' }}>
+              <img src={post.coverImage} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted2)', marginTop: '8px', letterSpacing: '0.08em' }}>
+              {new Date(post.date).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         )}
       </div>

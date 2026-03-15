@@ -53,14 +53,67 @@ function Login({ onLogin }) {
 }
 
 // ── Messages tab ───────────────────────────────────────────────────────
-function MessagesTab({ data }) {
+function MessagesTab({ data, headers, onRefresh }) {
+  const logs = data?.visitLogs ?? []
+
+  const byCountry = logs.reduce((acc, v) => {
+    const k = v.country || 'Unknown'
+    acc[k] = (acc[k] || 0) + 1
+    return acc
+  }, {})
+  const countrySorted = Object.entries(byCountry).sort((a, b) => b[1] - a[1]).slice(0, 8)
+
+  const byReferrer = logs.reduce((acc, v) => {
+    let k = 'direct'
+    if (v.referrer) {
+      try { k = new URL(v.referrer).hostname.replace(/^www\./, '') } catch { k = v.referrer }
+    }
+    acc[k] = (acc[k] || 0) + 1
+    return acc
+  }, {})
+  const referrerSorted = Object.entries(byReferrer).sort((a, b) => b[1] - a[1]).slice(0, 8)
+
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '48px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
         {[{ key: 'Total Views', val: data?.views ?? 0 }, { key: 'Messages', val: data?.messages?.length ?? 0 }, { key: 'CV Downloads', val: data?.downloads ?? 0 }].map(s => (
           <div key={s.key} style={S.stat}><div style={S.statVal}>{s.val}</div><div style={S.statKey}>{s.key}</div></div>
         ))}
       </div>
+      <div style={{ marginBottom: '40px' }}>
+        <button style={S.btnDanger} onClick={async () => {
+          if (!confirm('Reset view count and all visit logs to zero?')) return
+          await fetch('/api/views', { method: 'DELETE', headers })
+          onRefresh()
+        }}>reset views</button>
+      </div>
+
+      {logs.length > 0 && (
+        <>
+          <div style={S.label}>// visit sources</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px', marginBottom: '48px' }}>
+            <div>
+              <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>by country</div>
+              {countrySorted.map(([country, count]) => (
+                <div key={country} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{country}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>{count}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>by referrer</div>
+              {referrerSorted.map(([ref, count]) => (
+                <div key={ref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>{ref}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       <div style={S.label}>// messages</div>
       <div style={{ marginTop: '16px' }}>
         {!data?.messages?.length && <p style={{ fontSize: '13px', color: 'var(--muted)' }}>No messages yet.</p>}
@@ -365,7 +418,10 @@ export default function Admin() {
           ))}
         </div>
 
-        {tab === 'messages' && <MessagesTab data={data} />}
+        {tab === 'messages' && <MessagesTab data={data} headers={headers} onRefresh={() =>
+          fetch('/api/admin/data', { headers: { Authorization: `Bearer ${token}` } })
+            .then(r => r.ok ? r.json() : null).then(d => { if (d) setData(d) }).catch(() => {})
+        } />}
         {tab === 'projects' && <ProjectsTab headers={headers} />}
         {tab === 'posts' && <PostsTab headers={headers} />}
       </div>
