@@ -73,14 +73,14 @@ export default function BlogPost() {
         <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.2, marginBottom: '48px' }}>
           {post.title}
         </h1>
-        {post.coverImage && (
-          <div style={{ marginBottom: '48px', border: '0.5px solid var(--border)', overflow: 'hidden' }}>
-            <img src={post.coverImage} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
-          </div>
-        )}
         <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: '48px' }}>
           <ReactMarkdown components={components}>{post.content}</ReactMarkdown>
         </div>
+        {post.coverImage && (
+          <div style={{ marginTop: '48px', border: '0.5px solid var(--border)', overflow: 'hidden' }}>
+            <img src={post.coverImage} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
+          </div>
+        )}
       </div>
     </div>
   )
