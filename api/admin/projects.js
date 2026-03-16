@@ -39,5 +39,12 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true })
   }
 
+  if (req.method === 'PATCH') {
+    const { order } = req.body // array of _id strings in new order
+    if (!Array.isArray(order)) return res.status(400).json({ error: 'order must be an array' })
+    await Promise.all(order.map((id, i) => col.updateOne({ _id: new ObjectId(id) }, { $set: { order: i } })))
+    return res.status(200).json({ success: true })
+  }
+
   return res.status(405).json({ error: 'Method not allowed' })
 }

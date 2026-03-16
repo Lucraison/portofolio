@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   try {
     const db = await getDb()
-    const projects = await db.collection('projects').find().sort({ year: -1, createdAt: -1 }).toArray()
+    const projects = await db.collection('projects').find().sort({ order: 1, year: -1, createdAt: -1 }).toArray()
     return res.status(200).json(projects)
   } catch (err) {
     console.error(err)

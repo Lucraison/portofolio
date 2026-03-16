@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(dotnet --version)",
+      "Read(//c/Users/nicol/Documents/Projetos/Trackr/Trackr.API/**)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet build:*)"
     ]
   }
 }

@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react'
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 const TABS = ['messages', 'projects', 'posts']
 
@@ -261,12 +264,47 @@ function ProjectForm({ initial, onSave, onCancel }) {
   )
 }
 
+function SortableProject({ p, editing, setEditing, setCreating, save, remove }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: p._id })
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
+
+  return (
+    <div ref={setNodeRef} style={style} key={p._id}>
+      {editing === p._id
+        ? <ProjectForm initial={p} onSave={save} onCancel={() => setEditing(null)} />
+        : (
+          <div style={S.card}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span {...attributes} {...listeners} style={{ cursor: 'grab', color: 'var(--muted)', fontSize: '14px', userSelect: 'none' }}>⠿</span>
+                <div>
+                  <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.name}</span>
+                  <span style={{ fontSize: '10px', color: 'var(--muted)', marginLeft: '12px' }}>{p.year} · {p.status}</span>
+                  {p.featured && <span style={{ fontSize: '10px', color: 'var(--accent)', marginLeft: '8px' }}>· featured</span>}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>
+                <button style={S.btnDanger} onClick={() => remove(p._id)}>delete</button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  )
+}
+
 function ProjectsTab({ headers }) {
   const [projects, setProjects] = useState([])
   const [editing, setEditing] = useState(null)
   const [creating, setCreating] = useState(false)
+  const sensors = useSensors(useSensor(PointerSensor))
 
-  const load = () => fetch('/api/projects').then(r => r.json()).then(setProjects).catch(() => {})
+  const load = () => fetch('/api/projects').then(r => r.json()).then(data => {
+    const sorted = [...data].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
+    setProjects(sorted)
+  }).catch(() => {})
   useEffect(() => { load() }, [])
 
   const save = async (data) => {
@@ -281,34 +319,28 @@ function ProjectsTab({ headers }) {
     load()
   }
 
+  const handleDragEnd = async ({ active, over }) => {
+    if (!over || active.id === over.id) return
+    const oldIndex = projects.findIndex(p => p._id === active.id)
+    const newIndex = projects.findIndex(p => p._id === over.id)
+    const reordered = arrayMove(projects, oldIndex, newIndex)
+    setProjects(reordered)
+    await fetch('/api/admin/projects', { method: 'PATCH', headers, body: JSON.stringify({ order: reordered.map(p => p._id) }) })
+  }
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
         <button style={S.btn} onClick={() => { setCreating(true); setEditing(null) }}>+ new project</button>
       </div>
       {creating && <ProjectForm onSave={save} onCancel={() => setCreating(false)} />}
-      {projects.map(p => (
-        <div key={p._id}>
-          {editing === p._id
-            ? <ProjectForm initial={p} onSave={save} onCancel={() => setEditing(null)} />
-            : (
-              <div style={S.card}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '14px', color: 'var(--text)' }}>{p.name}</span>
-                    <span style={{ fontSize: '10px', color: 'var(--muted)', marginLeft: '12px' }}>{p.year} · {p.status}</span>
-                    {p.featured && <span style={{ fontSize: '10px', color: 'var(--accent)', marginLeft: '8px' }}>· featured</span>}
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={S.btnGhost} onClick={() => { setEditing(p._id); setCreating(false) }}>edit</button>
-                    <button style={S.btnDanger} onClick={() => remove(p._id)}>delete</button>
-                  </div>
-                </div>
-              </div>
-            )
-          }
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={projects.map(p => p._id)} strategy={verticalListSortingStrategy}>
+          {projects.map(p => (
+            <SortableProject key={p._id} p={p} editing={editing} setEditing={setEditing} setCreating={setCreating} save={save} remove={remove} />
+          ))}
+        </SortableContext>
+      </DndContext>
     </>
   )
 }
