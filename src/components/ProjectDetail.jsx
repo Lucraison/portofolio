@@ -112,7 +112,7 @@ export default function ProjectDetail() {
         </div>
 
         {project.url && (
-          <a href={project.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '48px', fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <a href={project.url.startsWith('http') ? project.url : `https://${project.url}`} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '48px', fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             view live →
           </a>
         )}
