@@ -191,21 +191,54 @@ function ImageUpload({ onUploaded, label = 'upload image' }) {
 // ── Project form ───────────────────────────────────────────────────────
 const EMPTY_PROJECT = { id: '', name: '', year: '', desc: '', tags: '', status: 'unfinished', url: '', guideUrl: '' }
 
+function SortableBlock({ block, i, blocks, setBlock, removeBlock }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block._id })
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1, marginBottom: '8px', border: '0.5px solid var(--border)', padding: '12px', position: 'relative' }
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span {...attributes} {...listeners} style={{ cursor: 'grab', color: 'var(--muted)', fontSize: '14px', userSelect: 'none' }}>⠿</span>
+          <span style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{block.type}</span>
+        </div>
+        {blocks.length > 1 && <button style={{ ...S.btnDanger, padding: '2px 10px' }} onClick={() => removeBlock(i)}>×</button>}
+      </div>
+      {block.type === 'text'
+        ? <textarea style={{ ...S.textarea, marginBottom: 0, minHeight: '120px' }} placeholder="content (markdown)" value={block.value} onChange={e => setBlock(i, e.target.value)} />
+        : (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="image URL" value={block.value} onChange={e => setBlock(i, e.target.value)} />
+            <ImageUpload label="+ upload" onUploaded={url => setBlock(i, url)} />
+          </div>
+        )
+      }
+    </div>
+  )
+}
+
 function ProjectForm({ initial, onSave, onCancel }) {
+  const withIds = (bs) => bs.map(b => b._id ? b : { ...b, _id: crypto.randomUUID() })
   const initBlocks = () => {
-    if (initial?.blocks?.length) return initial.blocks
-    if (initial?.content) return [{ type: 'text', value: initial.content }]
-    return [{ type: 'text', value: '' }]
+    if (initial?.blocks?.length) return withIds(initial.blocks)
+    if (initial?.content) return withIds([{ type: 'text', value: initial.content }])
+    return withIds([{ type: 'text', value: '' }])
   }
   const [form, setForm] = useState(initial ? { ...initial, tags: initial.tags?.join(', ') || '' } : EMPTY_PROJECT)
   const [blocks, setBlocks] = useState(initBlocks)
+  const sensors = useSensors(useSensor(PointerSensor))
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
   const toSlug = (str) => str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   const setName = (e) => setForm(f => ({ ...f, name: e.target.value, ...(!initial && !f._slugEdited ? { id: toSlug(e.target.value) } : {}) }))
 
   const setBlock = (i, val) => setBlocks(bs => bs.map((b, j) => j === i ? { ...b, value: val } : b))
-  const addBlock = (type) => setBlocks(bs => [...bs, { type, value: '' }])
+  const addBlock = (type) => setBlocks(bs => [...bs, { type, value: '', _id: crypto.randomUUID() }])
   const removeBlock = (i) => setBlocks(bs => bs.filter((_, j) => j !== i))
+  const handleBlockDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return
+    const oldIndex = blocks.findIndex(b => b._id === active.id)
+    const newIndex = blocks.findIndex(b => b._id === over.id)
+    setBlocks(bs => arrayMove(bs, oldIndex, newIndex))
+  }
 
   return (
     <div style={{ ...S.card, borderColor: 'var(--border-hi)' }}>
@@ -226,23 +259,13 @@ function ProjectForm({ initial, onSave, onCancel }) {
       <input style={S.input} placeholder="tags (comma separated)" value={form.tags} onChange={set('tags')} />
 
       <div style={{ marginTop: '8px' }}>
-        {blocks.map((block, i) => (
-          <div key={i} style={{ marginBottom: '8px', border: '0.5px solid var(--border)', padding: '12px', position: 'relative' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '10px', color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{block.type}</span>
-              {blocks.length > 1 && <button style={{ ...S.btnDanger, padding: '2px 10px' }} onClick={() => removeBlock(i)}>×</button>}
-            </div>
-            {block.type === 'text'
-              ? <textarea style={{ ...S.textarea, marginBottom: 0, minHeight: '120px' }} placeholder="content (markdown)" value={block.value} onChange={e => setBlock(i, e.target.value)} />
-              : (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="image URL" value={block.value} onChange={e => setBlock(i, e.target.value)} />
-                  <ImageUpload label="+ upload" onUploaded={url => setBlock(i, url)} />
-                </div>
-              )
-            }
-          </div>
-        ))}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleBlockDragEnd}>
+          <SortableContext items={blocks.map(b => b._id)} strategy={verticalListSortingStrategy}>
+            {blocks.map((block, i) => (
+              <SortableBlock key={block._id} block={block} i={i} blocks={blocks} setBlock={setBlock} removeBlock={removeBlock} />
+            ))}
+          </SortableContext>
+        </DndContext>
         <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
           <button style={S.btnGhost} onClick={() => addBlock('text')}>+ text</button>
           <button style={S.btnGhost} onClick={() => addBlock('image')}>+ image</button>

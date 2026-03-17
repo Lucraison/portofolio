@@ -58,6 +58,27 @@ function Home() {
   )
 }
 
+function HireBanner() {
+  const scrollToContact = () => {
+    const el = document.getElementById('contact')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    else window.location.href = '/#contact'
+  }
+  return (
+    <div onClick={scrollToContact} style={{
+      position: 'fixed', bottom: '32px', right: '16px', zIndex: 90,
+      background: 'var(--accent)', color: 'var(--bg)',
+      fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em',
+      textTransform: 'uppercase', padding: '10px 18px', borderRadius: '999px',
+      display: 'flex', alignItems: 'center',
+      gap: '8px', cursor: 'pointer', boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+    }}>
+      <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: 'var(--bg)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+      available for work
+    </div>
+  )
+}
+
 export default function App() {
   useEffect(() => {
     const lenis = new Lenis({
@@ -71,14 +92,17 @@ export default function App() {
   }, [])
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/guides/vps" element={<GuideVPS />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="/projects" element={<AllProjects />} />
-      <Route path="/projects/:id" element={<ProjectDetail />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/blog/:slug" element={<BlogPost />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/guides/vps" element={<GuideVPS />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/projects" element={<AllProjects />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
+      </Routes>
+      <HireBanner />
+    </>
   )
 }
