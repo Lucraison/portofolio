@@ -98,9 +98,9 @@ export default function ProjectDetail() {
                 block.type === 'text'
                   ? <ReactMarkdown key={i} components={components}>{block.value}</ReactMarkdown>
                   : (
-                    <div key={i} style={{ margin: '32px 0', border: '0.5px solid var(--border)', overflow: 'hidden', cursor: 'zoom-in' }}
+                    <div key={i} style={{ margin: '32px 0', cursor: 'zoom-in', textAlign: 'center' }}
                       onClick={() => setLightbox(block.value)}>
-                      <img src={block.value} alt="" style={{ width: '100%', maxHeight: '480px', objectFit: 'cover', display: 'block', transition: 'transform 0.3s ease' }}
+                      <img src={block.value} alt="" style={{ maxWidth: '100%', maxHeight: '600px', objectFit: 'contain', display: 'inline-block', border: '0.5px solid var(--border)', transition: 'transform 0.3s ease' }}
                         onMouseEnter={e => e.target.style.transform = 'scale(1.02)'}
                         onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                       />
