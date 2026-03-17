@@ -94,19 +94,38 @@ export default function ProjectDetail() {
 
         <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: '48px', marginBottom: '64px' }}>
           {project.blocks?.length > 0
-            ? project.blocks.map((block, i) => (
-                block.type === 'text'
-                  ? <ReactMarkdown key={i} components={components}>{block.value}</ReactMarkdown>
-                  : (
-                    <div key={i} style={{ margin: '32px 0', cursor: 'zoom-in', textAlign: 'center' }}
-                      onClick={() => setLightbox(block.value)}>
-                      <img src={block.value} alt="" style={{ maxWidth: '100%', maxHeight: '600px', objectFit: 'contain', display: 'inline-block', border: '0.5px solid var(--border)', transition: 'transform 0.3s ease' }}
-                        onMouseEnter={e => e.target.style.transform = 'scale(1.02)'}
-                        onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                      />
-                    </div>
-                  )
-              ))
+            ? (() => {
+                const rendered = []
+                const blocks = project.blocks
+                let i = 0
+                while (i < blocks.length) {
+                  const block = blocks[i]
+                  if (block.type === 'image') {
+                    const group = []
+                    while (i < blocks.length && blocks[i].type === 'image') {
+                      group.push(blocks[i])
+                      i++
+                    }
+                    rendered.push(
+                      <div key={i} style={{ margin: '32px 0', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                        {group.map((img, j) => (
+                          <div key={j} style={{ flex: group.length > 1 ? '1 1 0' : 'unset', cursor: 'zoom-in', textAlign: 'center' }}
+                            onClick={() => setLightbox(img.value)}>
+                            <img src={img.value} alt="" style={{ maxWidth: '100%', maxHeight: '600px', objectFit: 'contain', display: 'inline-block', border: '0.5px solid var(--border)', transition: 'transform 0.3s ease' }}
+                              onMouseEnter={e => e.target.style.transform = 'scale(1.02)'}
+                              onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  } else {
+                    rendered.push(<ReactMarkdown key={i} components={components}>{block.value}</ReactMarkdown>)
+                    i++
+                  }
+                }
+                return rendered
+              })()
             : <ReactMarkdown components={components}>{project.content}</ReactMarkdown>
           }
         </div>
