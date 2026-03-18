@@ -5,7 +5,10 @@
       "Bash(dotnet --version)",
       "Read(//c/Users/nicol/Documents/Projetos/Trackr/Trackr.API/**)",
       "Bash(dotnet add:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(mkdir -p \"c:/Users/nicol/Documents/Projetos/Freelance\")",
+      "Read(//c/Users/nicol/Documents/Projetos/**)",
+      "Bash(npm create:*)"
     ]
   }
 }
