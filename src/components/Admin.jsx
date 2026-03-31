@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import useSeo from '../hooks/useSeo'
 
 const TABS = ['messages', 'projects', 'posts']
 
@@ -58,6 +59,7 @@ function Login({ onLogin }) {
 // ── Messages tab ───────────────────────────────────────────────────────
 function MessagesTab({ data, headers, onRefresh }) {
   const logs = data?.visitLogs ?? []
+  const monthlyEvents = data?.monthlyEvents ?? {}
 
   const byCountry = logs.reduce((acc, v) => {
     const k = v.country || 'Unknown'
@@ -86,6 +88,8 @@ function MessagesTab({ data, headers, onRefresh }) {
     return acc
   }, {})
   const deviceSorted = Object.entries(byDevice).sort((a, b) => b[1] - a[1])
+  const monthlyRows = Object.entries(monthlyEvents).sort(([a], [b]) => a.localeCompare(b)).slice(-6)
+  const maxMonthly = Math.max(1, ...monthlyRows.map(([, v]) => Math.max(v.project_click || 0, v.contact_submit || 0)))
 
   return (
     <>
@@ -134,6 +138,31 @@ function MessagesTab({ data, headers, onRefresh }) {
                   <span style={{ fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>{count}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {monthlyRows.length > 0 && (
+        <>
+          <div style={S.label}>// monthly interactions</div>
+          <div style={{ marginTop: '16px', marginBottom: '42px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {monthlyRows.map(([month, values]) => (
+              <div key={month} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: 'var(--muted)', letterSpacing: '0.08em' }}>{month}</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ height: '12px', background: 'var(--bg)', border: '0.5px solid var(--border)', position: 'relative' }}>
+                    <div style={{ width: `${((values.project_click || 0) / maxMonthly) * 100}%`, height: '100%', background: 'var(--accent)' }} />
+                  </div>
+                  <div style={{ height: '12px', background: 'var(--bg)', border: '0.5px solid var(--border)', position: 'relative' }}>
+                    <div style={{ width: `${((values.contact_submit || 0) / maxMonthly) * 100}%`, height: '100%', background: 'var(--accent2)' }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: '14px', marginTop: '6px', fontSize: '10px', color: 'var(--muted2)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--accent)' }}>project clicks</span>
+              <span style={{ color: 'var(--accent2)' }}>contact submits</span>
             </div>
           </div>
         </>
@@ -463,6 +492,7 @@ export default function Admin() {
   const { token, setToken, headers } = useAuth()
   const [data, setData] = useState(null)
   const [tab, setTab] = useState('messages')
+  useSeo({ title: 'Admin - Nicolas Herrera', description: 'Admin dashboard', noindex: true })
 
   useEffect(() => {
     if (!token) return

@@ -5,7 +5,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 html { scroll-behavior: auto; }
@@ -15,10 +14,47 @@ body {
   color: var(--text);
   font-family: var(--sans);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-a { transition: color 0.2s; }
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  z-index: -2;
+  background:
+    radial-gradient(60% 45% at 10% 15%, var(--ambient-a), transparent 70%),
+    radial-gradient(40% 30% at 85% 75%, var(--ambient-b), transparent 72%),
+    radial-gradient(100% 100% at 50% 50%, var(--ambient-c), transparent 80%);
+  filter: saturate(110%);
+  animation: bgDrift 24s ease-in-out infinite alternate;
+}
+
+body::after {
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--grid-line-a) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-b) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: var(--grid-opacity);
+  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+}
+
+a, button, input, textarea, select {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
 ::selection { background: var(--accent); color: #fff; }
 
 ::-webkit-scrollbar { width: 4px; }
@@ -33,6 +69,16 @@ a { transition: color 0.2s; }
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bgDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-1.5%, 1%, 0) scale(1.03); }
 }
 
 .reveal {

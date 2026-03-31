@@ -15,7 +15,7 @@ const INPUT_STYLE = {
 
 export default function Contact() {
   const [copied, setCopied] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' })
   const [status, setStatus] = useState(null) // 'sending' | 'success' | 'error' | 'ratelimit'
 
   const handleCopy = () => {
@@ -34,8 +34,13 @@ export default function Contact() {
         body: JSON.stringify(form),
       })
       if (res.ok) {
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'contact_submit' }),
+        }).catch(() => {})
         setStatus('success')
-        setForm({ name: '', email: '', message: '' })
+        setForm({ name: '', email: '', message: '', website: '' })
       } else if (res.status === 429) {
         setStatus('ratelimit')
       } else {
@@ -95,6 +100,15 @@ export default function Contact() {
             value={form.message}
             onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
             required
+          />
+          <input
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+            value={form.website}
+            onChange={e => setForm(f => ({ ...f, website: e.target.value }))}
+            name="website"
+            aria-hidden="true"
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button

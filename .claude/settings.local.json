@@ -8,7 +8,8 @@
       "Bash(dotnet build:*)",
       "Bash(mkdir -p \"c:/Users/nicol/Documents/Projetos/Freelance\")",
       "Read(//c/Users/nicol/Documents/Projetos/**)",
-      "Bash(npm create:*)"
+      "Bash(npm create:*)",
+      "WebFetch(domain:www.awwwards.com)"
     ]
   }
 }

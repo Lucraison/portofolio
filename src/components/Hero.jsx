@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react'
 import useTypewriter from '../hooks/useTypewriter'
 
+const anim = (delay) => ({
+  opacity: 0,
+  animation: 'heroReveal 0.9s ease forwards',
+  animationDelay: delay,
+})
+
 export default function Hero() {
   const [views, setViews] = useState(null)
-  const [lastCommit, setLastCommit] = useState(null)
-
-  useEffect(() => {
-    fetch('https://api.github.com/repos/Lucraison/portofolio/commits?per_page=3')
-      .then(r => r.json())
-      .then(d => setLastCommit(d.map(c => c.commit.message.split('\n')[0])))
-      .catch(() => {})
-  }, [])
 
   useEffect(() => {
     const visited = sessionStorage.getItem('viewed')
@@ -21,77 +19,171 @@ export default function Hero() {
       .then(d => setViews(typeof d.count === 'number' ? d.count : null))
       .catch(() => setViews(null))
   }, [])
+
   const typedRef = useTypewriter([
     'open to work',
     'vibe coder',
     'full stack in progress',
     'based in antwerp, belgium',
-    '67',
+    'always learning',
   ])
 
   return (
     <section id="about" style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column',
-      justifyContent: 'center', padding: '100px 40px 60px',
-      position: 'relative', borderBottom: '0.5px solid var(--border)',
+      minHeight: '100vh',
+      display: 'flex', flexDirection: 'column',
+      justifyContent: 'center', alignItems: 'center',
+      padding: '120px 40px 80px',
+      position: 'relative',
+      borderBottom: '1px solid var(--accent)',
+      overflow: 'hidden',
+      textAlign: 'center',
     }}>
+
+      {/* Grain overlay */}
       <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-        backgroundSize: '60px 60px',
-        contain: 'strict',
+        position: 'absolute', inset: '-50%',
+        width: '200%', height: '200%',
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        backgroundSize: '180px 180px',
+        opacity: 0.04,
+        pointerEvents: 'none',
       }} />
 
-      <div className="reveal" style={{ maxWidth: '720px', position: 'relative'}}>
-        <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--accent)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '20px', opacity: 0.8 }}>
-          // hello, world
+      {/* Crimson glow */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(220, 20, 60, 0.09) 0%, transparent 65%)',
+      }} />
+
+      {/* Ghost name behind everything */}
+      <div style={{
+        position: 'absolute',
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%) rotate(-8deg)',
+        fontFamily: 'var(--mono)',
+        fontSize: 'clamp(120px, 22vw, 300px)',
+        fontWeight: 500,
+        color: 'transparent',
+        WebkitTextStroke: '1px rgba(220, 20, 60, 0.06)',
+        letterSpacing: '-0.04em',
+        lineHeight: 0.9,
+        userSelect: 'none', pointerEvents: 'none',
+        whiteSpace: 'nowrap',
+      }}>
+        NH
+      </div>
+
+      {/* Foreground */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+
+        {/* Location tag */}
+        <div style={{
+          fontFamily: 'var(--mono)', fontSize: '10px',
+          color: 'var(--muted)', letterSpacing: '0.25em',
+          textTransform: 'uppercase', marginBottom: '32px',
+          ...anim('0.1s'),
+        }}>
+          Antwerp, Belgium — Developer
         </div>
 
-        <h1 style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.05, marginBottom: '16px', letterSpacing: '-0.02em' }}>
-          Nicolas<br />
-          <span style={{ color: 'var(--accent)' }}>Herrera Santibañez</span>
+        {/* Name — three-line typographic treatment */}
+        <h1 style={{
+          fontFamily: 'var(--mono)', lineHeight: 0.95,
+          letterSpacing: '-0.03em', marginBottom: '36px',
+          ...anim('0.25s'),
+        }}>
+          {/* Line 1: thin */}
+          <span style={{
+            display: 'block',
+            fontSize: 'clamp(52px, 9vw, 110px)',
+            fontWeight: 300,
+            color: 'var(--text)',
+          }}>
+            Nicolas
+          </span>
+          {/* Line 2: bold crimson fill */}
+          <span style={{
+            display: 'block',
+            fontSize: 'clamp(52px, 9vw, 110px)',
+            fontWeight: 500,
+            color: 'var(--accent)',
+          }}>
+            Herrera
+          </span>
+          {/* Line 3: outlined, ghost */}
+          <span style={{
+            display: 'block',
+            fontSize: 'clamp(52px, 9vw, 110px)',
+            fontWeight: 500,
+            color: 'transparent',
+            WebkitTextStroke: '1.5px var(--accent)',
+            opacity: 0.5,
+          }}>
+            Santibañez
+          </span>
         </h1>
 
-        <div style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(13px, 2vw, 16px)', color: 'var(--muted)', marginBottom: '36px', minHeight: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Typewriter */}
+        <div style={{
+          fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--muted)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: '8px', marginBottom: '40px', minHeight: '22px',
+          ...anim('0.45s'),
+        }}>
           <span style={{ color: 'var(--accent2)' }}>&gt;</span>
-          <span ref={typedRef} />
-          <span style={{ display: 'inline-block', width: '2px', height: '1em', background: 'var(--accent)', verticalAlign: 'middle', animation: 'blink 1s step-end infinite' }} />
+          <span ref={typedRef} style={{ color: 'var(--text)' }} />
+          <span style={{
+            display: 'inline-block', width: '2px', height: '1em',
+            background: 'var(--accent)', verticalAlign: 'middle',
+            animation: 'blink 1s step-end infinite',
+          }} />
         </div>
 
-        <p style={{ color: 'var(--muted)', fontSize: '16px', lineHeight: 2, maxWidth: '560px', marginBottom: '40px' }}>
-          "Developer based in Antwerp. Building things as I go."
-        </p>
-
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <a href="#projects" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--bg)', background: 'var(--accent)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            View projects
+        {/* CTAs */}
+        <div style={{
+          display: 'flex', gap: '12px', flexWrap: 'wrap',
+          justifyContent: 'center', marginBottom: '40px',
+          ...anim('0.6s'),
+        }}>
+          <a href="#projects" style={{
+            fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--bg)',
+            background: 'var(--accent)', padding: '10px 28px',
+            textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}>
+            view projects
           </a>
-          <a href="#contact" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            Get in touch
+          <a href="#contact" style={{
+            fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)',
+            border: '0.5px solid var(--border)', padding: '10px 28px',
+            textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}>
+            get in touch
           </a>
           <a
             href="/IT-CVNicolasHerrera.pdf"
             download
             onClick={() => fetch('/api/cv', { method: 'POST' }).catch(() => {})}
-            style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', border: '0.5px solid var(--border)', padding: '10px 20px', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}
+            style={{
+              fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)',
+              border: '0.5px solid var(--border)', padding: '10px 28px',
+              textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase',
+            }}
           >
-            Download CV
+            ↓ cv
           </a>
         </div>
 
-        {lastCommit?.length > 0 && (
-          <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.08em', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ color: 'var(--muted)', opacity: 0.5, marginBottom: '4px' }}>last commit:</span>
-            {lastCommit.map((msg, i) => (
-              <span key={i} style={{ color: 'var(--muted)', opacity: 1 - i * 0.35 }}>
-                "{msg}"
-              </span>
-            ))}
+        {views !== null && (
+          <div style={{
+            fontFamily: 'var(--mono)', fontSize: '10px',
+            color: 'var(--muted2)', letterSpacing: '0.1em',
+            ...anim('0.75s'),
+          }}>
+            <span style={{ color: 'var(--accent)' }}>●</span> {views} people have been here
           </div>
         )}
-        <div style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)', letterSpacing: '0.12em', marginTop: '16px', minHeight: '18px' }}>
-          {views !== null && <><span style={{ color: 'var(--accent)' }}>●</span> {views} visits</>}
-        </div>
+
       </div>
     </section>
   )

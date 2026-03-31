@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useSeo from '../hooks/useSeo'
 
 export default function Blog() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const navigate = useNavigate()
+  useSeo({
+    title: 'Notes - Nicolas Herrera',
+    description: 'Blog posts and notes about development, systems, and projects.',
+    image: '/og.png',
+  })
+
+  const loadPosts = () => {
+    setError(false)
+    setLoading(true)
+    fetch('/api/posts')
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('fetch failed')))
+      .then(data => { setPosts(data); setLoading(false) })
+      .catch(() => { setLoading(false); setError(true) })
+  }
 
   useEffect(() => {
-    fetch('/api/posts')
-      .then(r => r.json())
-      .then(data => { setPosts(data); setLoading(false) })
-      .catch(() => setLoading(false))
+    loadPosts()
   }, [])
 
   return (
@@ -31,6 +44,12 @@ export default function Blog() {
         </h1>
 
         {loading && <p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--muted)' }}>loading...</p>}
+        {!loading && error && (
+          <div style={{ border: '0.5px solid #e05c5c44', background: 'var(--bg1)', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: '#e05c5c' }}>Could not load posts.</span>
+            <button onClick={loadPosts} style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted)', background: 'none', border: '0.5px solid var(--border)', padding: '6px 10px', letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>retry</button>
+          </div>
+        )}
         {!loading && posts.length === 0 && <p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--muted)' }}>no posts yet.</p>}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

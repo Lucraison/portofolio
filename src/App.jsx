@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Lenis from 'lenis'
 import './App.css'
@@ -9,13 +9,15 @@ import Skills from './components/Skills'
 import Education from './components/Education'
 import Notes from './components/Notes'
 import Contact from './components/Contact'
-import ProjectDetail from './components/ProjectDetail'
-import AllProjects from './components/AllProjects'
-import Blog from './components/Blog'
-import BlogPost from './components/BlogPost'
-import Admin from './components/Admin'
 import useReveal from './hooks/useReveal'
-import GuideVPS from './components/guides/GuideVPS'
+import useSeo from './hooks/useSeo'
+
+const ProjectDetail = lazy(() => import('./components/ProjectDetail'))
+const AllProjects = lazy(() => import('./components/AllProjects'))
+const Blog = lazy(() => import('./components/Blog'))
+const BlogPost = lazy(() => import('./components/BlogPost'))
+const Admin = lazy(() => import('./components/Admin'))
+const GuideVPS = lazy(() => import('./components/guides/GuideVPS'))
 
 const BASE_NAV = ['about', 'projects', 'skills', 'education', 'contact']
 
@@ -24,6 +26,11 @@ function Home() {
   const [hasPosts, setHasPosts] = useState(true)
 
   useReveal()
+  useSeo({
+    title: 'Nicolas Herrera - Full Stack Portfolio',
+    description: 'Developer portfolio with projects, guides, and notes by Nicolas Herrera.',
+    image: '/og.png',
+  })
 
   useEffect(() => {
     fetch('/api/posts').then(r => r.json()).then(d => setHasPosts(d.length > 0)).catch(() => {})
@@ -54,6 +61,14 @@ function Home() {
       <Education />
       <Notes />
       <Contact />
+    </div>
+  )
+}
+
+function RouteLoading() {
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--muted)', fontFamily: 'var(--mono)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      loading...
     </div>
   )
 }
@@ -93,15 +108,17 @@ export default function App() {
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/guides/vps" element={<GuideVPS />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/projects" element={<AllProjects />} />
-        <Route path="/projects/:id" element={<ProjectDetail />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-      </Routes>
+      <Suspense fallback={<RouteLoading />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/guides/vps" element={<GuideVPS />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/projects" element={<AllProjects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+        </Routes>
+      </Suspense>
       <HireBanner />
     </>
   )

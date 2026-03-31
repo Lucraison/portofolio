@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import useSeo from '../hooks/useSeo'
 
 const components = {
   h1: ({ children }) => (
@@ -37,13 +38,26 @@ export default function BlogPost() {
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
+  const loadPost = () => {
+    setError(false)
+    setLoading(true)
     fetch(`/api/posts/${slug}`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => { setPost(data); setLoading(false) })
-      .catch(() => setLoading(false))
+      .then(data => { setPost(data); setLoading(false); if (!data) setError(true) })
+      .catch(() => { setLoading(false); setError(true) })
+  }
+
+  useEffect(() => {
+    loadPost()
   }, [slug])
+
+  useSeo({
+    title: post ? `${post.title} - Notes` : 'Notes - Nicolas Herrera',
+    description: post?.description || 'Technical notes and dev learnings.',
+    image: post?.coverImage || '/og.png',
+  })
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -53,7 +67,10 @@ export default function BlogPost() {
 
   if (!post) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontFamily: 'var(--mono)', color: 'var(--muted)' }}>post not found.</p>
+      <div style={{ fontFamily: 'var(--mono)', textAlign: 'center' }}>
+        <p style={{ color: 'var(--muted)', marginBottom: '12px' }}>{error ? 'failed to load post.' : 'post not found.'}</p>
+        {error && <button onClick={loadPost} style={{ background: 'none', border: '0.5px solid var(--border)', color: 'var(--muted)', padding: '7px 12px', cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: '10px' }}>retry</button>}
+      </div>
     </div>
   )
 
@@ -79,7 +96,7 @@ export default function BlogPost() {
         {post.coverImage && (
           <div style={{ marginTop: '48px' }}>
             <div style={{ border: '0.5px solid var(--border)', overflow: 'hidden' }}>
-              <img src={post.coverImage} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
+              <img src={post.coverImage} alt={post.title} loading="lazy" decoding="async" style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', display: 'block' }} />
             </div>
             <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted2)', marginTop: '8px', letterSpacing: '0.08em' }}>
               {new Date(post.date).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}

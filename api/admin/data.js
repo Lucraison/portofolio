@@ -17,19 +17,45 @@ export default async function handler(req, res) {
 
   try {
     const db = await getDb()
-    const [messages, viewDoc, downloads, posts, visitLogs] = await Promise.all([
+    const since = new Date()
+    since.setMonth(since.getMonth() - 5)
+    since.setDate(1)
+    since.setHours(0, 0, 0, 0)
+
+    const [messages, viewDoc, downloads, posts, visitLogs, eventRows] = await Promise.all([
       db.collection('messages').find().sort({ createdAt: -1 }).toArray(),
       db.collection('views').findOne({ _id: 'total' }),
       db.collection('cv_downloads').countDocuments(),
       db.collection('posts').find().sort({ date: -1 }).toArray(),
       db.collection('visit_logs').find().sort({ at: -1 }).limit(200).toArray(),
+      db.collection('events').aggregate([
+        { $match: { at: { $gte: since } } },
+        {
+          $group: {
+            _id: {
+              month: { $dateToString: { format: '%Y-%m', date: '$at' } },
+              type: '$type',
+            },
+            count: { $sum: 1 },
+          },
+        },
+      ]).toArray(),
     ])
+
+    const monthlyEvents = {}
+    eventRows.forEach((row) => {
+      const key = row._id.month
+      if (!monthlyEvents[key]) monthlyEvents[key] = { project_click: 0, contact_submit: 0 }
+      monthlyEvents[key][row._id.type] = row.count
+    })
+
     return res.status(200).json({
       messages,
       views: viewDoc?.count ?? 0,
       downloads,
       posts,
       visitLogs,
+      monthlyEvents,
     })
   } catch (err) {
     console.error(err)

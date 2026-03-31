@@ -9,13 +9,22 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { name, email, message } = req.body
+  const { name, email, message, website } = req.body || {}
 
-  if (!name || !email || !message) {
+  // Honeypot field for basic bot protection.
+  if (typeof website === 'string' && website.trim()) {
+    return res.status(200).json({ success: true })
+  }
+
+  const cleanName = String(name || '').trim()
+  const cleanEmail = String(email || '').trim().toLowerCase()
+  const cleanMessage = String(message || '').trim()
+
+  if (!cleanName || !cleanEmail || !cleanMessage) {
     return res.status(400).json({ error: 'All fields are required' })
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
     return res.status(400).json({ error: 'Invalid email' })
   }
 
@@ -37,9 +46,9 @@ export default async function handler(req, res) {
     )
 
     await db.collection('messages').insertOne({
-      name,
-      email,
-      message,
+      name: cleanName,
+      email: cleanEmail,
+      message: cleanMessage.slice(0, 5000),
       ip,
       createdAt: new Date(),
     })
@@ -47,8 +56,8 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from: 'Portfolio <onboarding@resend.dev>',
       to: 'nicolas.nataniel79@gmail.com',
-      subject: `New message from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+      subject: `New message from ${cleanName}`,
+      text: `Name: ${cleanName}\nEmail: ${cleanEmail}\n\n${cleanMessage.slice(0, 5000)}`,
     })
 
     return res.status(201).json({ success: true })

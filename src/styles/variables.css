@@ -37,34 +37,52 @@
      NAV
      ===================== */
    --nav-bg: rgba(8, 8, 8, 0.92);
+   --ambient-a: rgba(220, 20, 60, 0.12);
+   --ambient-b: rgba(255, 77, 109, 0.08);
+   --ambient-c: rgba(255, 255, 255, 0.02);
+   --grid-line-a: rgba(255, 255, 255, 0.025);
+   --grid-line-b: rgba(255, 255, 255, 0.02);
+   --grid-opacity: 0.25;
 }
 
 [data-theme="light"] {
-   --bg: #e8e6e3;
-   --bg1: #dedad6;
-   --bg2: #d4cfc9;
-   --border: rgba(0, 0, 0, 0.1);
+   --bg: #f6f3ef;
+   --bg1: #f0ebe5;
+   --bg2: #e7dfd7;
+   --border: rgba(32, 22, 12, 0.14);
    --border-hi: rgba(220, 20, 60, 0.4);
-   --accent-border: rgba(220, 20, 60, 0.3);
-   --accent2-border: rgba(255, 77, 109, 0.3);
-   --text: #1a1a1a;
-   --muted: #4a4a4a;
-   --muted2: #999999;
-   --nav-bg: rgba(232, 230, 227, 0.92);
+   --accent-border: rgba(220, 20, 60, 0.34);
+   --accent2-border: rgba(255, 77, 109, 0.34);
+   --text: #1f1a16;
+   --muted: #574e46;
+   --muted2: #8b8077;
+   --nav-bg: rgba(246, 243, 239, 0.9);
+   --ambient-a: rgba(220, 20, 60, 0.07);
+   --ambient-b: rgba(255, 77, 109, 0.05);
+   --ambient-c: rgba(32, 22, 12, 0.03);
+   --grid-line-a: rgba(32, 22, 12, 0.05);
+   --grid-line-b: rgba(32, 22, 12, 0.035);
+   --grid-opacity: 0.35;
 }
 
 @media (prefers-color-scheme: light) {
    :root:not([data-theme="dark"]) {
-      --bg: #e8e6e3;
-      --bg1: #dedad6;
-      --bg2: #d4cfc9;
-      --border: rgba(0, 0, 0, 0.1);
+      --bg: #f6f3ef;
+      --bg1: #f0ebe5;
+      --bg2: #e7dfd7;
+      --border: rgba(32, 22, 12, 0.14);
       --border-hi: rgba(220, 20, 60, 0.4);
-      --accent-border: rgba(220, 20, 60, 0.3);
-      --accent2-border: rgba(255, 77, 109, 0.3);
-      --text: #1a1a1a;
-      --muted: #4a4a4a;
-      --muted2: #999999;
-      --nav-bg: rgba(232, 230, 227, 0.92);
+      --accent-border: rgba(220, 20, 60, 0.34);
+      --accent2-border: rgba(255, 77, 109, 0.34);
+      --text: #1f1a16;
+      --muted: #574e46;
+      --muted2: #8b8077;
+      --nav-bg: rgba(246, 243, 239, 0.9);
+      --ambient-a: rgba(220, 20, 60, 0.07);
+      --ambient-b: rgba(255, 77, 109, 0.05);
+      --ambient-c: rgba(32, 22, 12, 0.03);
+      --grid-line-a: rgba(32, 22, 12, 0.05);
+      --grid-line-b: rgba(32, 22, 12, 0.035);
+      --grid-opacity: 0.35;
    }
 }
