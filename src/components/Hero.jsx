@@ -22,7 +22,7 @@ export default function Hero() {
 
   const typedRef = useTypewriter([
     'open to work',
-    'vibe coder',
+    'ai-driven engineer',
     'full stack in progress',
     'based in antwerp, belgium',
     'always learning',
